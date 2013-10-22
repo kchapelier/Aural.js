@@ -38,6 +38,15 @@ Aural.Music.Note.prototype.initializeFromLabel = function(label, octave, cents) 
 		cents = 0;
 	}
 
+	octave = octave || null;
+	
+	if(octave === null) {
+		//try to get the octave from the label
+		label = Aural.Music.Note.parseLabel(label);
+		octave = label[1];
+		label = label[0];
+	}
+	
 	this.midi = Aural.Music.Note.getMidiFromLabel(label, octave);
 	this.frequency = Aural.Music.Note.getFrequencyFromMidi(this.midi, cents);
 	this.cents = cents;
@@ -62,10 +71,27 @@ Aural.Music.Note.prototype.initializeFromMidi = function(midi, cents) {
 	this.label = label[0];
 	this.octave = label[1];
 	
-	this.frequency = Aural.Music.Note.getFrequencyFromMidi(midi);
+	this.frequency = Aural.Music.Note.getFrequencyFromMidi(midi, cents);
 	
 	this.midi = midi;
 	this.cents = cents;
+};
+
+Aural.Music.Note.prototype.getHarmonic = function(harmonic) {
+	var note = Aural.Music.Note.createFromFrequency(this.frequency * harmonic);
+	return note;
+};
+
+Aural.Music.Note.prototype.getHarmonicSeries = function(number) {
+	var harmonics = [];
+	
+	number = Math.max(1, number);
+	
+	for(var i = 1; i <= number; i++) {
+		harmonics.push(this.frequency * i);
+	}
+	
+	return harmonics;
 };
 
 Aural.Music.Note.prototype.transpose = function(transposition, cents) {
@@ -95,16 +121,29 @@ Aural.Music.Note.createFromLabel = function(label, octave, cents) {
 
 Aural.Music.Note.getLabelFromMidi = function(midi) {
 	var rationalized = midi % 12;
-	var octave = Math.floor(midi / 12);
+	var octave = Math.floor(midi / 12) - 1;
 	var label = this.notes[rationalized];
 	
 	return [label, octave];
 };
 
 Aural.Music.Note.getFrequencyFromMidi = function(midi, cents) {
+	console.log(cents);
 	cents = cents || 0;
 	
-	return this.middleA * Math.pow(2, (midi - 69 + cents / 100) / 12); //twelve tone equal temperament
+	return this.middleA * Math.pow(2, (midi - 69 + (cents / 100)) / 12); //hardcoded twelve tone equal temperament
+};
+
+Aural.Music.Note.parseLabel = function(label) {
+	var match = label.match(/([0-9]+)$/g);
+	var octave = null;
+	
+	if(match && match[0]) {
+		label = label.substr(0, label.length - match[0].length);
+		octave = parseInt(match[0]);
+	}
+	
+	return [label, octave];
 };
 
 Aural.Music.Note.getMidiFromLabel = function(label, octave) {
@@ -112,28 +151,15 @@ Aural.Music.Note.getMidiFromLabel = function(label, octave) {
 	
 	if(octave === null) {
 		//try to get the octave from the label
-		var match = label.match(/([0-9]+)$/g);
-		
-		if(match && match[0]) {
-			label = label.substr(0, label.length - match[0].length);
-			octave = parseInt(match[0]);
-		}
+		label = Aural.Music.Note.parseLabel(label);
+		octave = label[1];
+		label = label[0];
 	}
 	
-	return this.notes.indexOf(label) + octave * 12;
+	return this.notes.indexOf(label) + (octave + 1) * 12;
 };
 
 Aural.Music.Note.getMidiFromFrequency = function(frequency) {
-	/*
-	
-	F = 440 * 2^((M - 69) / 12);
-	F / 440 = 2^((M - 69) / 12);
-	log(F / 440) = ((M - 69) / 12) * log(2);
-	log(F / 440) / log(2) = ((M - 69) / 12);
-	log(F / 440) / log(2) * 12 + 69 = M;
-	Z = M + C /100;
-	
-	*/
 	var m = Math.log(frequency / this.middleA) / Math.log(2) * 12 + 69;
 	var midi = Math.round(m);
 	var cents = (m - midi) * 100;
