@@ -1,0 +1,120 @@
+<html>
+	<head>
+		<link rel="stylesheet" href="css/global.css" />
+		<link rel="stylesheet" href="css/keyboard.css" />
+		
+		<!-- Aural is library-agnostic -->
+		<script src="../src/aural.js"></script>
+		<script src="../src/aural.music.note.js"></script>
+		<script src="../src/aural.music.scale.js"></script>
+		<script src="../src/aural.music.scalelist.js"></script>
+		<script src="../src/aural.music.scalelist.definitions.js"></script>
+		
+		<script src="//cdnjs.cloudflare.com/ajax/libs/mootools/1.4.5/mootools-core-full-compat-yc.js"></script>
+		<script src="//cdnjs.cloudflare.com/ajax/libs/mootools-more/1.4.0.1/mootools-more-yui-compressed.js"></script>
+	</head>
+	<body>
+		<div class="keyboard">
+			<div class="whitekey c">C</div>
+			<div class="blackkey c-sharp">C#</div>
+			<div class="whitekey d">D</div>
+			<div class="blackkey d-sharp">D#</div>
+			<div class="whitekey e">E</div>
+			<div class="whitekey f">F</div>
+			<div class="blackkey f-sharp">F#</div>
+			<div class="whitekey g">G</div>
+			<div class="blackkey g-sharp">G#</div>
+			<div class="whitekey a">A</div>
+			<div class="blackkey a-sharp">A#</div>
+			<div class="whitekey b">B</div>
+			<div class="whitekey c">C</div>
+			<div class="blackkey c-sharp">C#</div>
+			<div class="whitekey d">D</div>
+			<div class="blackkey d-sharp">D#</div>
+			<div class="whitekey e">E</div>
+			<div class="whitekey f">F</div>
+			<div class="blackkey f-sharp">F#</div>
+			<div class="whitekey g">G</div>
+			<div class="blackkey g-sharp">G#</div>
+			<div class="whitekey a">A</div>
+			<div class="blackkey a-sharp">A#</div>
+			<div class="whitekey b">B</div>
+			<div class="whitekey c">C</div>
+			<div class="blackkey c-sharp">C#</div>
+			<div class="whitekey d">D</div>
+			<div class="blackkey d-sharp">D#</div>
+			<div class="whitekey e">E</div>
+			<div class="whitekey f">F</div>
+			<div class="blackkey f-sharp">F#</div>
+			<div class="whitekey g">G</div>
+			<div class="blackkey g-sharp">G#</div>
+			<div class="whitekey a">A</div>
+			<div class="blackkey a-sharp">A#</div>
+			<div class="whitekey b">B</div>
+			<div class="whitekey c">C</div>
+			<div class="blackkey c-sharp">C#</div>
+			<div class="whitekey d">D</div>
+			<div class="blackkey d-sharp">D#</div>
+			<div class="whitekey e">E</div>
+			<div class="whitekey f">F</div>
+			<div class="blackkey f-sharp">F#</div>
+			<div class="whitekey g">G</div>
+			<div class="blackkey g-sharp">G#</div>
+			<div class="whitekey a">A</div>
+			<div class="blackkey a-sharp">A#</div>
+			<div class="whitekey b">B</div>
+		</div>
+		
+		<div id="log">
+			
+		</div>
+		
+		<script>
+		
+			document.addEvent('domready', function() {
+				var log = $('log');
+				
+				var clearLog = function() {
+					log.empty();
+				};
+				
+				var showLog = function(msg) {
+					log.innerHTML += msg + '<br />';
+				};
+				
+				showLog('Select at least 4 keys and find out the matching scales.');
+				
+				var elements = $$('.keyboard div');
+				
+				var searchScales = function() {
+					var keys = $$('.keyboard div.active').get('text').unique();
+					
+					clearLog();
+					
+					showLog('SELECTION : ' + keys.join(', '));
+					
+					if(keys.length > 3) {
+						var scales = Aural.Music.ScaleList.fits(keys);
+						
+						for(var i = 0, l = scales.length; i < l; i++) {
+							showLog('[' + scales[i].getType() + '] ' + scales[i].titles.join(', ') + ' scale in ' + scales[i].key + ' : ' + scales[i].getNotesAsLabels().join(', '));
+						}
+						
+					} else {
+						showLog('Select at leat 4 keys.');
+					}
+				};
+				
+				elements.addEvent('click', function() {
+					var key = this.className.replace(/( |blackkey|whitekey|active)/gi, '');
+					$$('.' + key).toggleClass('active');
+					
+					searchScales();
+				});
+				
+				
+			});
+		
+		</script>
+	</body>
+</html>

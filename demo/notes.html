@@ -1,0 +1,127 @@
+<html>
+	<head>
+		<link rel="stylesheet" href="css/global.css" />
+		<link rel="stylesheet" href="css/keyboard.css" />
+		
+		<!-- Aural is library-agnostic -->
+		<script src="../src/aural.js"></script>
+		<script src="../src/aural.music.note.js"></script>
+		
+		<script src="//cdnjs.cloudflare.com/ajax/libs/mootools/1.4.5/mootools-core-full-compat-yc.js"></script>
+		<script src="//cdnjs.cloudflare.com/ajax/libs/mootools-more/1.4.0.1/mootools-more-yui-compressed.js"></script>
+	</head>
+	<body>
+		<div class="keyboard">
+			<div class="whitekey c">C2</div>
+			<div class="blackkey c-sharp">C#2</div>
+			<div class="whitekey d">D2</div>
+			<div class="blackkey d-sharp">D#2</div>
+			<div class="whitekey e">E2</div>
+			<div class="whitekey f">F2</div>
+			<div class="blackkey f-sharp">F#2</div>
+			<div class="whitekey g">G2</div>
+			<div class="blackkey g-sharp">G#2</div>
+			<div class="whitekey a">A2</div>
+			<div class="blackkey a-sharp">A#2</div>
+			<div class="whitekey b">B2</div>
+			<div class="whitekey c">C3</div>
+			<div class="blackkey c-sharp">C#3</div>
+			<div class="whitekey d">D3</div>
+			<div class="blackkey d-sharp">D#3</div>
+			<div class="whitekey e">E3</div>
+			<div class="whitekey f">F3</div>
+			<div class="blackkey f-sharp">F#3</div>
+			<div class="whitekey g">G3</div>
+			<div class="blackkey g-sharp">G#3</div>
+			<div class="whitekey a">A3</div>
+			<div class="blackkey a-sharp">A#3</div>
+			<div class="whitekey b">B3</div>
+			<div class="whitekey c">C4</div>
+			<div class="blackkey c-sharp">C#4</div>
+			<div class="whitekey d">D4</div>
+			<div class="blackkey d-sharp">D#4</div>
+			<div class="whitekey e">E4</div>
+			<div class="whitekey f">F4</div>
+			<div class="blackkey f-sharp">F#4</div>
+			<div class="whitekey g">G4</div>
+			<div class="blackkey g-sharp">G#4</div>
+			<div class="whitekey a">A4</div>
+			<div class="blackkey a-sharp">A#4</div>
+			<div class="whitekey b">B4</div>
+			<div class="whitekey c">C5</div>
+			<div class="blackkey c-sharp">C#5</div>
+			<div class="whitekey d">D5</div>
+			<div class="blackkey d-sharp">D#5</div>
+			<div class="whitekey e">E5</div>
+			<div class="whitekey f">F5</div>
+			<div class="blackkey f-sharp">F#5</div>
+			<div class="whitekey g">G5</div>
+			<div class="blackkey g-sharp">G#5</div>
+			<div class="whitekey a">A5</div>
+			<div class="blackkey a-sharp">A#5</div>
+			<div class="whitekey b">B5</div>
+			<div class="whitekey c">C6</div>
+			<div class="blackkey c-sharp">C#6</div>
+			<div class="whitekey d">D6</div>
+			<div class="blackkey d-sharp">D#6</div>
+			<div class="whitekey e">E6</div>
+			<div class="whitekey f">F6</div>
+			<div class="blackkey f-sharp">F#6</div>
+			<div class="whitekey g">G6</div>
+			<div class="blackkey g-sharp">G#6</div>
+			<div class="whitekey a">A6</div>
+			<div class="blackkey a-sharp">A#6</div>
+			<div class="whitekey b">B6</div>
+		</div>
+		
+		<div id="log">
+			
+		</div>
+		
+		<script>
+		
+			document.addEvent('domready', function() {
+				var log = $('log');
+				
+				var clearLog = function() {
+					log.empty();
+				};
+				
+				var showLog = function(msg) {
+					log.innerHTML += msg + '<br />';
+				};
+				
+				showLog('Aural.js is by default set to use a 12-TET tuning with a concert pitch set to 440hz.');
+				
+				var elements = $$('.keyboard div');
+				
+				elements.addEvent('click', function() {
+					var noteLabel = this.get('text');
+					elements.removeClass('active');
+					this.addClass('active');
+					
+					var note = Aural.Music.Note.createFromLabel(noteLabel);
+					
+					clearLog();
+					showLog('INFORMATIONS');
+					showLog('Note : ' + note.label + ' (' + note.getSolfegeName() + ')');
+					showLog('Octave : ' + note.octave);
+					showLog('Cents : ' + note.cents);
+					showLog('Midi value : ' + note.midi);
+					showLog('Frequency : ' + (Math.round(note.frequency * 1000) / 1000) + 'hz');
+					
+					showLog('-----------');
+					
+					showLog('HARMONIC SERIES');
+					
+					for(var i = 1; i < 9; i++) {
+						var harmonic = note.getHarmonic(i);
+						showLog('[' + i + '] : ' + (Math.round(harmonic.frequency * 1000) / 1000) + 'hz ('+harmonic.label+harmonic.octave+' '+(Math.round(harmonic.cents * 1000) / 1000)+'cts)');
+					}
+					
+				});
+			});
+		
+		</script>
+	</body>
+</html>
