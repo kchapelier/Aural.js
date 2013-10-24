@@ -13,9 +13,9 @@ var Aural = {
 	},
 	Sound : {
 		Interpolation : null,
-		Automation : null, //support
+		Automation : null,
 		Sample : null,
-		Soundfont : null, //round robin & velocity layer
+		Soundfont : null,
 		Wavelet : null,
 		WaveletPlayer : null
 	},
@@ -23,7 +23,7 @@ var Aural = {
 		Scala : null
 	},
 	Info : {
-		version : '0.0.1',
+		version : '-',
 		stable : false
 	}
 };

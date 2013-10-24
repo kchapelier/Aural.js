@@ -14,7 +14,7 @@ Aural.Music.ScaleList = {
 	 * Compares an array of successive intervals to a scale and return every matching keyed copy
 	 * @param (integer[]) intervals - Array of successive intervals
 	 * @param (Aural.Music.Scale) scale - Scale
-	 * @returns (Aural.Music.Scale[]) Matching keyed scale
+	 * @returns (Aural.Music.Scale[]) Matching keyed scales
 	 */
 	compareIntervals : function(intervals, scale) {
 		var input = intervals.intervals;
@@ -67,7 +67,7 @@ Aural.Music.ScaleList = {
 	/**
 	 * Normalize a set of notes to successive intervals
 	 * @param (string[]|integer[]|Aural.Music.Note[]) input - Notes
-	 * @returns (integer[]) Array of successibe intervals
+	 * @returns (integer[]) Array of successive intervals
 	 */
 	normalizeInput : function(input) {
 		
@@ -108,7 +108,7 @@ Aural.Music.ScaleList = {
 		return intervals;
 	},
 	/**
-	 * Get all scale matching a given set of notes
+	 * Get all scales matching a given set of notes
 	 * @param (string[]|integer[]|Aural.Music.Note[]) notes - Notes
 	 * @param (boolean) exactOnly - Whether to return only the scales matching exactly without any additionnal notes
 	 * @returns (Aural.Music.Scale[]) Array of matching scales
@@ -150,7 +150,7 @@ Aural.Music.ScaleList = {
 		return null;
 	},
 	/**
-	 * Get all scale containing the same notes.
+	 * Get all scales containing the same notes as the specified scale
 	 * @param (Aural.Music.Scale) scale - Scale to compare with
 	 * @param (boolean) exactOnly - Specify if only the scales containing exactly the same notes are considered valid
 	 * @returns (Aural.Music.Scale[]) Array of similar scales
