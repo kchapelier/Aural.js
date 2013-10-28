@@ -3,7 +3,7 @@ Aural.js
 
 An attempt at aggregating all my previous work on audio in a single library.
 
-The library is divided in two major namespace : Music and Sound.
+The library is divided in two major namespaces : Music and Sound.
 
 Aural.Music operates at the macro level and handles things like Notes, Intervals, Chords and Scales.
 
