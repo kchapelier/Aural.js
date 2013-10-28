@@ -25,13 +25,10 @@ Aural.Music.ScaleList.addScale([2, 1, 2, 2, 2, 2, 1],               ['ascending 
 Aural.Music.ScaleList.addScale([1, 2, 1, 2, 2, 2, 2],               ['altered']);
 
 Aural.Music.ScaleList.addScale([1, 3, 1, 2, 1, 2, 2],               ['spanish']);
-Aural.Music.ScaleList.addScale([1, 3, 1, 2, 1, 3, 1],               ['double harmonic']);
+Aural.Music.ScaleList.addScale([1, 3, 1, 2, 1, 3, 1],               ['double harmonic', 'hungarian minor', 'minor gypsy', 'spanish gypsy']); //http://en.wikipedia.org/wiki/Hungarian_minor_scale http://en.wikipedia.org/wiki/Gypsy_scale#Minor_Gypsy_scale
 Aural.Music.ScaleList.addScale([1, 3, 2, 2, 2, 1, 1],               ['enigmatic']);
 Aural.Music.ScaleList.addScale([1, 2, 2, 2, 2, 2, 1],               ['neapolitan']);
 Aural.Music.ScaleList.addScale([1, 2, 2, 2, 1, 3, 1],               ['neapolitan minor']);
-Aural.Music.ScaleList.addScale([2, 1, 3, 1, 1, 3, 1],               ['hungarian minor', 'double Harmonic minor']); //http://en.wikipedia.org/wiki/Hungarian_minor_scale
-
-Aural.Music.ScaleList.addScale([1, 3, 1, 2, 1, 3, 1],               ['double harmonic', 'minor gypsy', 'spanish gypsy']); //http://en.wikipedia.org/wiki/Gypsy_scale#Minor_Gypsy_scale
 
 //HEXA
 Aural.Music.ScaleList.addScale([2, 2, 2, 2, 2, 2],                  ['whole-tone']);

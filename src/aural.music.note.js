@@ -1,5 +1,9 @@
 "use strict";
 
+//TODO : Ensure negative midi values can be used
+//TODO : Smarter label parsing (# means +1, b means -1, Cb = B, E# = F)
+//TODO : disable the functionality which automatically changes note after a certain cents amount, this could become a mess for generative use
+
 Aural.Music.Note = function(label, octave, midi, cents, frequency) {
 	if(midi !== null) {
 		this.initializeFromMidi(midi, cents);
@@ -80,8 +84,8 @@ Aural.Music.Note.prototype.initializeFromMidi = function(midi, cents) {
 
 /**
  * Get the 'solfege' name of the note
- * @param (boolean) Whether to use the roman labels
- * @returns (string) Solfege name (ie: Do, Mi#, ...)
+ * @param {boolean} Whether to use the roman labels
+ * @returns {string} Solfege name (ie: Do, Mi#, ...)
  */
 Aural.Music.Note.prototype.getSolfegeName = function(asRoman) {
 	var rationalized = this.midi % 12;
@@ -91,8 +95,8 @@ Aural.Music.Note.prototype.getSolfegeName = function(asRoman) {
 
 /**
  * Get the specified harmonic as a Note object
- * @param (integer) harmonic - Harmonic degree
- * @returns (Aural.Music.Note) Harmonic
+ * @param {integer} harmonic - Harmonic degree
+ * @returns {Aural.Music.Note} Harmonic
  */
 Aural.Music.Note.prototype.getHarmonic = function(harmonic) {
 	var note = Aural.Music.Note.createFromFrequency(this.frequency * harmonic);
@@ -101,8 +105,8 @@ Aural.Music.Note.prototype.getHarmonic = function(harmonic) {
 
 /**
  * Get a list of harmonics as frequencies
- * @param (integer) number - Number of harmonics to return, starting from the fundamental
- * @returns (float[]) Frequencies
+ * @param {integer} number - Number of harmonics to return, starting from the fundamental
+ * @returns {float[]} Frequencies
  */
 Aural.Music.Note.prototype.getHarmonicSeries = function(number) {
 	var harmonics = [];
@@ -114,6 +118,10 @@ Aural.Music.Note.prototype.getHarmonicSeries = function(number) {
 	}
 	
 	return harmonics;
+};
+
+Aural.Music.Note.prototype.setCents = function(cents) {
+	this.transpose(0, cents - this.cents);
 };
 
 Aural.Music.Note.prototype.transpose = function(transposition, cents) {
@@ -132,20 +140,20 @@ Aural.Music.Note.romanSolfegeName = ['Do', 'Do#', 'Re', 'Re#', 'Mi', 'Fa', 'Fa#'
 
 Aural.Music.Note.createFromFrequency = function(frequency) {
 	return new Aural.Music.Note(null, null, null, null, frequency);
-}
+};
 
 Aural.Music.Note.createFromMidi = function(midi, cents) {
 	return new Aural.Music.Note(null, null, midi, cents, null);
-}
+};
 
 Aural.Music.Note.createFromLabel = function(label, octave, cents) {
 	return new Aural.Music.Note(label, octave, null, cents, null);
-}
+};
 
 /**
  * Get the label (and octave) from a given midi value
- * @param (integer) midi - Midi value
- * @returns (array) Array with the label and the octave (ie: ['C', 6])
+ * @param {integer} midi - Midi value
+ * @returns {array} Array with the label and the octave (ie: ['C', 6])
  */
 Aural.Music.Note.getLabelFromMidi = function(midi) {
 	var rationalized = midi % 12;
@@ -157,9 +165,9 @@ Aural.Music.Note.getLabelFromMidi = function(midi) {
 
 /**
  * Get the frequency matching a given midi value (and cents)
- * @param (integer) midi - Midi value
- * @param (float) cents - Cents
- * @returns (float) Frequency in hertz
+ * @param {integer} midi - Midi value
+ * @param {float} cents - Cents
+ * @returns {float} Frequency in hertz
  */
 Aural.Music.Note.getFrequencyFromMidi = function(midi, cents) {
 	cents = cents || 0;
@@ -168,8 +176,8 @@ Aural.Music.Note.getFrequencyFromMidi = function(midi, cents) {
 
 /**
  * Parse a note label to extract its octave
- * @param (string) label - Label (ie: C6)
- * @returns (array) Array with the label and the octave (ie: ['C', 6])
+ * @param {string} label - Label (ie: C6)
+ * @returns {array} Array with the label and the octave (ie: ['C', 6])
  */
 Aural.Music.Note.parseLabel = function(label) {
 	var match = label.match(/([0-9]+)$/g);
@@ -185,9 +193,9 @@ Aural.Music.Note.parseLabel = function(label) {
 
 /**
  * Get the midi value (and cents) matching a given note identified by its label and octave
- * @param (string) label - Label of the note (ie : C, D#, G5, F#3, ...)
- * @param (integer|null) octave - Octave (if not already specified in the label)
- * @returns (integer) Midi value
+ * @param {string} label - Label of the note (ie : C, D#, G5, F#3, ...)
+ * @param {integer|null} octave - Octave (if not already specified in the label)
+ * @returns {integer} Midi value
  */
 Aural.Music.Note.getMidiFromLabel = function(label, octave) {
 	octave = octave || null;
@@ -204,8 +212,8 @@ Aural.Music.Note.getMidiFromLabel = function(label, octave) {
 
 /**
  * Get the midi value (and cents) matching a given frequency
- * @param (float) frequency - Frequency in hertz
- * @returns (array) Array with the midi value and the cents
+ * @param {float} frequency - Frequency in hertz
+ * @returns {array} Array with the midi value and the cents
  */
 Aural.Music.Note.getMidiFromFrequency = function(frequency) {
 	var m = Math.log(frequency / Aural.Music.Tuning.middleA) / Math.log(2) * 12 + 69;

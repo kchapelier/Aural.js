@@ -17,6 +17,7 @@
 	height:150px;
 	z-index:10;
 	box-shadow:0 2px 3px #000, 0 -2px 10px #333 inset;
+	border-radius:0 0 2px 2px;
 }
 
 .keyboard .whitekey {
@@ -25,6 +26,7 @@
 	height:280px;
 	z-index:5;
 	box-shadow:0 -1px 1px #000 inset, 0 -1px 1px #000 inset, 0 -20px 20px #DDD inset;
+	border-radius:0 0 3px 3px;
 }
 
 .keyboard .blackkey:hover {
@@ -41,6 +43,14 @@
 
 .keyboard .whitekey.active{
 	background: #66F;
+}
+
+.keyboard .blackkey.highlight {
+	background: #611;
+}
+
+.keyboard .whitekey.highlight{
+	background: #F88;
 }
 
 .keyboard  .c-sharp, .keyboard  .d-sharp, .keyboard  .f-sharp, .keyboard  .g-sharp, .keyboard  .a-sharp {

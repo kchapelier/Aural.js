@@ -1,20 +1,22 @@
 "use strict";
 
+//TODO : implements getContainedScales
+
 Aural.Music.ScaleList = {
 	scales : [],
 	/**
 	 * Add a scale to the list
-	 * @param (integer[]) intervals - Successive intervals of the scale
-	 * @param (string[]) titles - Array of possible titles
+	 * @param {integer[]} intervals - Successive intervals of the scale
+	 * @param {string[]} titles - Array of possible titles
 	 */
 	addScale : function(intervals, titles) {
 		this.scales.push(new Aural.Music.Scale(titles, intervals));
 	},
 	/**
 	 * Compares an array of successive intervals to a scale and return every matching keyed copy
-	 * @param (integer[]) intervals - Array of successive intervals
-	 * @param (Aural.Music.Scale) scale - Scale
-	 * @returns (Aural.Music.Scale[]) Matching keyed scales
+	 * @param {integer[]} intervals - Array of successive intervals
+	 * @param {Aural.Music.Scale} scale - Scale
+	 * @returns {Aural.Music.Scale[]} Matching keyed scales
 	 */
 	compareIntervals : function(intervals, scale) {
 		var input = intervals.intervals;
@@ -31,12 +33,13 @@ Aural.Music.ScaleList = {
 			}
 			
 			var expectPos = 0;
-			
+			var correct = false;
+
 			for(var i = 0, nl = input.length; i < nl; i++) {
 				var val = input[i];
 				var expectVal = 0;
-				var correct = false;
-				
+				correct = false;
+
 				while(true) {
 					expectVal+= mExpected[expectPos];
 					
@@ -57,7 +60,6 @@ Aural.Music.ScaleList = {
 			
 			if(correct) {
 				var label = Aural.Music.Note.getLabelFromMidi(intervals.offset - offset + 12);
-				//console.log(mExpected, input, label, offset, intervals.offset);
 				correctScales.push(scale.createCopy(label[0]));
 			}
 		}
@@ -66,8 +68,8 @@ Aural.Music.ScaleList = {
 	},
 	/**
 	 * Normalize a set of notes to successive intervals
-	 * @param (string[]|integer[]|Aural.Music.Note[]) input - Notes
-	 * @returns (integer[]) Array of successive intervals
+	 * @param {string[]|integer[]|Aural.Music.Note[]} input - Notes
+	 * @returns {integer[]} Array of successive intervals
 	 */
 	normalizeInput : function(input) {
 		
@@ -109,9 +111,9 @@ Aural.Music.ScaleList = {
 	},
 	/**
 	 * Get all scales matching a given set of notes
-	 * @param (string[]|integer[]|Aural.Music.Note[]) notes - Notes
-	 * @param (boolean) exactOnly - Whether to return only the scales matching exactly without any additionnal notes
-	 * @returns (Aural.Music.Scale[]) Array of matching scales
+	 * @param {string[]|integer[]|Aural.Music.Note[]} notes - Notes
+	 * @param {boolean} exactOnly - Whether to return only the scales matching exactly without any additionnal notes
+	 * @returns {Aural.Music.Scale[]} Array of matching scales
 	 */
 	fits : function(notes, exactOnly) {
 		var intervals = this.normalizeInput(notes);
@@ -134,9 +136,9 @@ Aural.Music.ScaleList = {
 	},
 	/**
 	 * Get a specific scale
-	 * @param (string) name - Name of the scale (ie: aeolian, minor or whole-tone)
-	 * @param (string) key - Name of the key (ie: C or G#)
-	 * @returns (Aural.Music.Scale|null) Specified scale
+	 * @param {string} name - Name of the scale (ie: aeolian, minor or whole-tone)
+	 * @param {string} key - Name of the key (ie: C or G#)
+	 * @returns {Aural.Music.Scale|null} Specified scale
 	 */
 	getScale : function(name, key) {
 		for(var i = 0, l = this.scales.length; i < l; i++) {
@@ -150,12 +152,20 @@ Aural.Music.ScaleList = {
 		return null;
 	},
 	/**
-	 * Get all scales containing the same notes as the specified scale
-	 * @param (Aural.Music.Scale) scale - Scale to compare with
-	 * @param (boolean) exactOnly - Specify if only the scales containing exactly the same notes are considered valid
-	 * @returns (Aural.Music.Scale[]) Array of similar scales
+	 * Get all scales containing all the notes as the specified scale
+	 * @param {Aural.Music.Scale} scale - Scale to compare with
+	 * @param {boolean} exactOnly - Specify if only the scales containing exactly the same notes are considered valid
+	 * @returns {Aural.Music.Scale[]} Array of similar scales
 	 */
 	getSimilarScales : function(scale, exactOnly) {
 		return this.fits(scale.getNotesAsLabels(), exactOnly);
+	},
+	/**
+	 * Get all the scales matching a part of the notes of the specified scale
+	 * @param {Aural.Music.Scale} scale - Scale to compare with
+	 * @returns {Aural.Music.Scale[]} Array of contained scales
+	 */
+	getContainedScales: function(scale) {
+		throw "to implements";
 	}
 };

@@ -1,5 +1,7 @@
 "use strict";
 
+//TODO : Get all possible chords for a given scale
+
 Aural.Music.Scale = function(titles, intervals, key) {
 	this.titles = titles;
 	this.intervals = intervals;
@@ -16,8 +18,8 @@ Aural.Music.Scale.HEMITONIC_TYPE_SUCCESSION = 'succession';
 
 /**
  * Get the hemitonic properties of the scale
- * @param (string) resultType - Desired properties
- * @returns (string)  
+ * @param {string} resultType - Desired properties
+ * @returns {string}  
  */
 Aural.Music.Scale.prototype.getHemitonicType = function(resultType) {
 	var nbSemitone = 0;
@@ -93,7 +95,7 @@ Aural.Music.Scale.prototype.getHemitonicType = function(resultType) {
 
 /**
  * Get the type of the scale
- * @returns (string) Type
+ * @returns {string} Type
  **/
 Aural.Music.Scale.prototype.getType = function() {
 	switch(this.intervals.length) {
@@ -128,8 +130,8 @@ Aural.Music.Scale.prototype.getType = function() {
 
 /**
  * Get all the notes from the scale
- * @param (integer|null) octave - Desired octave for the notes
- * @returns (Aural.Music.Note[]) Notes
+ * @param {integer|null} octave - Desired octave for the notes
+ * @returns {Aural.Music.Note[]} Notes
  */
 Aural.Music.Scale.prototype.getNotes = function(octave) {
 	octave = octave || 0;
@@ -147,7 +149,7 @@ Aural.Music.Scale.prototype.getNotes = function(octave) {
 
 /**
  * Get all the notes of the scale as string
- * @returns (string[]) Labels of the notes
+ * @returns {string[]} Labels of the notes
  */
 Aural.Music.Scale.prototype.getNotesAsLabels = function() {
 	var notes = [];
@@ -164,8 +166,26 @@ Aural.Music.Scale.prototype.getNotesAsLabels = function() {
 };
 
 /**
+ * Define the key of the scale
+ * @param {string} key - Key
+ */
+Aural.Music.Scale.prototype.setKey = function(key) {
+	this.key = key;
+};
+
+/**
+ * Transpose the scale
+ * @param {integer} intervals - Number of intervals
+ */
+Aural.Music.Scale.prototype.transpose = function(intervals) {
+	var offset = this.getKeyOffset() + intervals;
+	var label = Aural.Music.Note.getLabelFromMidi(offset);
+	this.key = label[0];
+};
+
+/**
  * Return the offset of the key from C
- * @returns (integer) Offset
+ * @returns {integer} Offset
  */
 Aural.Music.Scale.prototype.getKeyOffset = function() {
 	return Aural.Music.Note.getMidiFromLabel(this.key);
@@ -173,8 +193,8 @@ Aural.Music.Scale.prototype.getKeyOffset = function() {
 
 /**
  * Create a copy of this scale in another key
- * @param (string) key - Desired key (ie: C, D#, ...)
- * @returns (Aural.Music.Scale) Keyed scale
+ * @param {string} key - Desired key (ie: C, D#, ...)
+ * @returns {Aural.Music.Scale} Keyed scale
  */
 Aural.Music.Scale.prototype.createCopy = function(key) {
 	return new Aural.Music.Scale(this.titles, this.intervals, key);

@@ -20,10 +20,13 @@ var Aural = {
 		WaveletPlayer : null
 	},
 	Utils : {
-		Scala : null
+		Scala : null,
+		XHR : null,
+		Support : null
 	},
 	Info : {
 		version : '-',
 		stable : false
 	}
 };
+
