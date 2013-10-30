@@ -9,7 +9,9 @@ var Aural = {
 		Scale : null,
 		ScaleList : null,
 		Chord : null,
-		ChordList : null
+		ChordList : null,
+		Interval : null,
+		IntervalList : null
 	},
 	Sound : {
 		Interpolation : null,

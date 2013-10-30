@@ -19,7 +19,7 @@ Aural.Music.Scale.prototype.key = null;
 Aural.Music.Chord.prototype.getType = function() {
 	switch(this.intervals.length) {
 		case 1:
-			return '';
+			return 'monad';
 		case 2:
 			return 'dyad';
 		case 3:
