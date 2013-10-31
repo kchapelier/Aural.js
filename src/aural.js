@@ -16,7 +16,7 @@ var Aural = {
 	Sound : {
 		Interpolation : null,
 		Automation : null,
-		Sample : null,
+		Buffer : null,
 		Soundfont : null,
 		Wavelet : null,
 		WaveletPlayer : null
