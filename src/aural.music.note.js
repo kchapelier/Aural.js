@@ -29,7 +29,7 @@ Aural.Music.Note.prototype.initializeFromFrequency = function(frequency) {
 	this.octave = label[1];
 	this.midi = midi[0];
 	this.cents = midi[1];
-	this.frequency = frequency;
+	this.frequency = Math.abs(frequency);
 };
 
 /**
@@ -71,6 +71,15 @@ Aural.Music.Note.prototype.initializeFromMidi = function(midi, cents) {
 	this.cents = cents;
 };
 
+
+/**
+ * Get the period of the note in millisecond
+ * @return {float} Period
+ */
+Aural.Music.Note.prototype.getPeriod = function() {
+	return 1000 / this.frequency;
+};
+
 /**
  * Get the 'solfege' name of the note
  * @param {boolean} Whether to use the roman labels
@@ -79,12 +88,16 @@ Aural.Music.Note.prototype.initializeFromMidi = function(midi, cents) {
 Aural.Music.Note.prototype.getSolfegeName = function(asRoman) {
 	var rationalized = this.midi % 12;
 	
+	if(rationalized < 0) {
+		rationalized+= 12;
+	}
+
 	return asRoman ? Aural.Music.Note.romanSolfegeName[rationalized] : Aural.Music.Note.solfegeName[rationalized];
 };
 
 /**
  * Get the specified harmonic as a Note object
- * @param {integer} harmonic - Harmonic degree
+ * @param {integer} harmonic - Harmonic degree (1 to infinity)
  * @returns {Aural.Music.Note} Harmonic
  */
 Aural.Music.Note.prototype.getHarmonic = function(harmonic) {
@@ -255,7 +268,7 @@ Aural.Music.Note.getMidiFromLabel = function(label, octave) {
  * @returns {array} Array with the midi value and the cents
  */
 Aural.Music.Note.getMidiFromFrequency = function(frequency) {
-	var m = Math.log(frequency / Aural.Music.Tuning.middleA) / Math.log(2) * 12 + 69;
+	var m = Math.log(Math.abs(frequency) / Aural.Music.Tuning.middleA) / Math.log(2) * 12 + 69;
 	var midi = Math.round(m);
 	var cents = (m - midi) * 100;
 	
