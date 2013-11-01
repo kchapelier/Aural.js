@@ -146,6 +146,34 @@ Aural.Music.Note.prototype.transpose = function(transposition, cents) {
 	this.initializeFromMidi(this.midi, this.cents);
 };
 
+/**
+ * Transpose the note from a certain number of intervals
+ * @param {string|Aural.Music.Interval} interval - Interval (name or object)
+ * @param {integer} multiplier - Multiplier
+ */
+Aural.Music.Note.prototype.applyInterval = function(interval, multiplier) {
+	multiplier = multiplier || 1;
+
+	if(typeof interval == 'string') {
+		interval = Aural.Music.IntervalList.getInterval(interval);
+	}
+
+	if(interval) {
+		var transpose = Math.floor(interval.cents / 100);
+		var restCents = interval.cents % 100;
+
+		this.transpose(transpose * multiplier, restCents * multiplier);
+	}
+};
+
+/**
+ * Get a copy of the note
+ * @return {Aural.Music.Note} Copy of the note
+ */
+Aural.Music.Note.prototype.copy = function() {
+	return Aural.Music.Note.createFromMidi(this.midi, this.cents);
+};
+
 Aural.Music.Note.notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 Aural.Music.Note.solfegeName = ['Do', 'Do#', 'Re', 'Re#', 'Mi', 'Fa', 'Fa#', 'Sol', 'Sol#', 'La', 'La#', 'Ti'];
 Aural.Music.Note.romanSolfegeName = ['Do', 'Do#', 'Re', 'Re#', 'Mi', 'Fa', 'Fa#', 'Sol', 'Sol#', 'La', 'La#', 'Si'];

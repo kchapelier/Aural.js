@@ -1,3 +1,4 @@
+module("Aural.Music.Note");
 
 test('note label A4', function() {
 	var note = Aural.Music.Note.createFromLabel('A4');
@@ -18,7 +19,7 @@ test('note label C6+10c', function() {
 	equal(note.octave, 6, 'C6+10c should have 6 as octave');
 	equal(note.midi, 84, 'C6+10c should have 84 as midi value');
 	equal(Math.floor(note.getPeriod() * 1000) / 1000, 0.95, 'C6+10c should have a period of 0.95');
-	equal(note.getSolfegeName(), 'Do', 'C6+10c should be a La');
+	equal(note.getSolfegeName(), 'Do', 'C6+10c should be a Do');
 });
 
 test('note label A implied A0', function() {
@@ -240,4 +241,15 @@ test('note set cents', function() {
 	equal(note.midi, 69, 'A4+10c should have 69 as midi value');
 	equal(Math.floor(note.getPeriod() * 1000) / 1000, 2.259, 'A4+10c should have a period of 2.259');
 	equal(note.getSolfegeName(), 'La', 'A4+10c should be a La');
+});
+
+test('note copy', function() {
+	var note1 = Aural.Music.Note.createFromLabel('C', 2, 100);
+	note2 = note1.copy();
+
+	equal(note1.cents, note2.cents, 'copied note should have the same cents');
+	equal(note1.label, note2.label, 'copied note should have the same label');
+	equal(note1.octave, note2.octave, 'copied note should have the same octave');
+	equal(note1.frequency, note2.frequency, 'copied note should have the same frequency');
+	equal(note1.midi, note2.midi, 'copied note should have the same midi value');
 });
