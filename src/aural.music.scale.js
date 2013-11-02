@@ -176,7 +176,6 @@ Aural.Music.Scale.prototype.getIntervals = function() {
 	for(var i = 0, l = this.intervals.length; i < l; i++) {
 		intervals.push(Aural.Music.IntervalList.getInterval(current));
 		current+= 100 * this.intervals[i];
-		console.log(current);
 	}
 
 	return intervals;
@@ -187,7 +186,8 @@ Aural.Music.Scale.prototype.getIntervals = function() {
  * @param {string} key - Key
  */
 Aural.Music.Scale.prototype.setKey = function(key) {
-	this.key = key;
+	var label = Aural.Music.Note.parseLabel(key);
+	this.key = label[0];
 };
 
 /**

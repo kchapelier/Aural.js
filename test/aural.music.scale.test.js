@@ -65,8 +65,107 @@ test('scale minor bebop', function() {
 	equal(scale.getNotesAsLabels().join(','), 'C,D,D#,E,F,G,A,A#', 'C minor bebop scale should be C,D,D#,E,F,G,A,A#');
 });
 
-//TODO : test get intervals
-//TODO : test setKey
-//TODO : test getNotes()
-//TODO : test transpose
-//TODO : test copy
+test('scale set key', function() {
+	var scale = Aural.Music.ScaleList.getScale('major');
+
+	scale.setKey('Ab');
+
+	equal(scale.key, 'G#', 'Ab major scale key should be G#');
+	equal(scale.getNotesAsLabels().join(','), 'G#,A#,C,C#,D#,F,G', 'Ab major scale should be G#,A#,C,C#,D#,F,G');
+
+	scale.setKey('E#');
+
+	equal(scale.key, 'F', 'E# major scale key should be F');
+	equal(scale.getNotesAsLabels().join(','), 'F,G,A,A#,C,D,E', 'E# major scale should be F,G,A,A#,C,D,E');
+});
+
+test('scale transpose', function() {
+	var scale = Aural.Music.ScaleList.getScale('major');
+
+	scale.transpose(2);
+
+	equal(scale.key, 'D', 'C+2 major scale key should be D');
+	equal(scale.getNotesAsLabels().join(','), 'D,E,F#,G,A,B,C#', 'C+2 major scale should be D,E,F#,G,A,B,C#');
+
+	scale.transpose(-4);
+
+	equal(scale.key, 'A#', 'C-2 major scale key should be A#');
+	equal(scale.getNotesAsLabels().join(','), 'A#,C,D,D#,F,G,A', 'C-2 major scale should be A#,C,D,D#,F,G,A');
+});
+
+test('scale copy', function() {
+	var scale1 = Aural.Music.ScaleList.getScale('major');
+	var scale2 = scale1.copy('A#');
+
+	equal(scale1.key, 'C', 'default scale key should be C');
+	equal(scale1.getNotesAsLabels().join(','), 'C,D,E,F,G,A,B', 'C major scale should be C,D,E,F,G,A,B');
+
+	equal(scale2.key, 'A#', 'A# major scale key should be A#');
+	equal(scale2.getNotesAsLabels().join(','), 'A#,C,D,D#,F,G,A', 'A# major scale should be A#,C,D,D#,F,G,A');
+});
+
+test('scale get interval', function() {
+	var scale = Aural.Music.ScaleList.getScale('major');
+
+	var intervals = scale.getIntervals();
+
+	equal(intervals.length, 7, 'there should be 7 intervals in a major scale');
+
+	equal(intervals[0].cents, 0, '1st interval of a major scale should be of 0 cents');
+	equal(intervals[1].cents, 200, '2nd interval of a major scale  should be of 200 cents');
+	equal(intervals[2].cents, 400, '3rd interval of a major scale  should be of 400 cents');
+	equal(intervals[3].cents, 500, '4th interval of a major scale  should be of 500 cents');
+	equal(intervals[4].cents, 700, '5th interval of a major scale  should be of 700 cents');
+	equal(intervals[5].cents, 900, '6th interval of a major scale  should be of 900 cents');
+	equal(intervals[6].cents, 1100, '7th interval of a major scale  should be of 1100 cents');
+
+	scale = Aural.Music.ScaleList.getScale('ryukyu');
+
+	intervals = scale.getIntervals();
+
+	equal(intervals.length, 5, 'there should be 5 intervals in a ryukyu scale');
+
+	equal(intervals[0].cents, 0, '1st interval of a ryukyu scale should be of 0 cents');
+	equal(intervals[1].cents, 400, '2nd interval of a ryukyu scale should be of 400 cents');
+	equal(intervals[2].cents, 500, '3rd interval of a ryukyu scale should be of 500 cents');
+	equal(intervals[3].cents, 700, '4th interval of a ryukyu scale should be of 700 cents');
+	equal(intervals[4].cents, 1100, '5th interval of a ryukyu scale should be of 1100 cents');
+});
+
+test('scale get notes', function() {
+	var scale = Aural.Music.ScaleList.getScale('minor penta', 'D');
+
+	var notes = scale.getNotes(3);
+
+	equal(notes.length, 5, 'there should be 5 notes in a minor penta scale octave');
+
+	equal(Math.floor(notes[0].frequency * 1000) / 1000, 73.416, '1st note in 2nd octave of D minor penta scale should be 73.416hz');
+	equal(notes[0].label, 'D', '1st note in 2nd octave of D minor penta scale should be D');
+	equal(notes[0].octave, 2, '1st note in 2nd octave of D minor penta scale should be of octave 2');
+	equal(notes[0].cents, 0, '1st note in 2nd octave of D minor penta scale should be 0cts');
+	equal(notes[0].midi, 38, '1st note in 2nd octave of D minor penta scale should be midi value 38');
+
+	equal(Math.floor(notes[1].frequency * 1000) / 1000, 87.307, '2nd note in 2nd octave of D minor penta scale should be 87.307hz');
+	equal(notes[1].label, 'F', '2nd note in 2nd octave of D minor penta scale should be F');
+	equal(notes[1].octave, 2, '2nd note in 2nd octave of D minor penta scale should be of octave 2');
+	equal(notes[1].cents, 0, '2nd note in 2nd octave of D minor penta scale should be 0cts');
+	equal(notes[1].midi, 41, '2nd note in 2nd octave of D minor penta scale should be midi value 41');
+	
+	equal(Math.floor(notes[2].frequency * 1000) / 1000, 97.998, '3rd note in 2nd octave of D minor penta scale should be 97.998hz');
+	equal(notes[2].label, 'G', '3rd note in 2nd octave of D minor penta scale should be G');
+	equal(notes[2].octave, 2, '3rd note in 2nd octave of D minor penta scale should be of octave 2');
+	equal(notes[2].cents, 0, '3rd note in 2nd octave of D minor penta scale should be 0cts');
+	equal(notes[2].midi, 43, '3rd note in 2nd octave of D minor penta scale should be midi value 43');
+	
+	equal(Math.floor(notes[3].frequency * 1000) / 1000, 110, '4th note in 2nd octave of D minor penta scale should be 110hz');
+	equal(notes[3].label, 'A', '4th note in 2nd octave of D minor penta scale should be A');
+	equal(notes[3].octave, 2, '4th note in 2nd octave of D minor penta scale should be of octave 2');
+	equal(notes[3].cents, 0, '4th note in 2nd octave of D minor penta scale should be 0cts');
+	equal(notes[3].midi, 45, '4th note in 2nd octave of D minor penta scale should be midi value 45');
+	
+	equal(Math.floor(notes[4].frequency * 1000) / 1000, 130.812, '5th note in 2nd octave of D minor penta scale should be 130.812hz');
+	equal(notes[4].label, 'C', '5th note in 2nd octave of D minor penta scale should be C');
+	equal(notes[4].octave, 3, '5th note in 2nd octave of D minor penta scale should be of octave 3');
+	equal(notes[4].cents, 0, '5th note in 2nd octave of D minor penta scale should be 0cts');
+	equal(notes[4].midi, 48, '5th note in 2nd octave of D minor penta scale should be midi value 48');
+});
