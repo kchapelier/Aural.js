@@ -100,7 +100,7 @@
 						var scales = Aural.Music.ScaleList.fits(keys);
 						
 						for(var i = 0, l = scales.length; i < l; i++) {
-							showLog('[' + scales[i].getType() + '] ' + scales[i].titles.join(', ') + ' scale in ' + scales[i].key + ' : ' + scales[i].getNotesAsLabels().join(', '));
+							showLog('[' + scales[i].getType() + '] ' + scales[i].titles.join(', ') + ' scale in ' + scales[i].key + ' : ' + scales[i].getNotesAsLabels().join(', ') + (scales[i].intervals.length == keys.length ? ' (exact match)' : ''));
 						}
 						
 					} else {

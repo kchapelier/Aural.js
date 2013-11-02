@@ -112,6 +112,7 @@
 					showLog('Cents : ' + note.cents);
 					showLog('Midi value : ' + note.midi);
 					showLog('Frequency : ' + (Math.round(note.frequency * 1000) / 1000) + 'hz');
+					showLog('Period : ' + (Math.round(note.getPeriod() * 1000) / 1000) + 'ms');
 					
 					showLog('-----------');
 					
