@@ -243,7 +243,7 @@ Aural.Music.Note.getFrequencyFromMidi = function(midi, cents) {
  * @returns {array} Array with the label and the octave (ie: ['C', 6])
  */
 Aural.Music.Note.parseLabel = function(label) {
-	var regex = /([CDEFGAB])([b#]?)([0-9]*)$/g;
+	var regex = /^([CDEFGAB])([b#]?)(-?[0-9]*)$/g;
 	var match = regex.exec(label);
 	label = match[1];
 	var modifier = match[2];

@@ -1,16 +1,18 @@
 "use strict";
 
-Aural.Music.Chord = function(intervals, shortname, name, key) {
+Aural.Music.Chord = function(intervals, shortname, name, key, octave) {
 	this.name = name;
 	this.shortname = shortname;
 	this.intervals = intervals;
 	this.key = key || 'C';
+	this.octave = octave || 0;
 };
 
 Aural.Music.Chord.prototype.intervals = null;
 Aural.Music.Chord.prototype.name = null;
 Aural.Music.Chord.prototype.shortname = null;
 Aural.Music.Chord.prototype.key = null;
+Aural.Music.Chord.prototype.octave = null;
 
 /**
  * Get the type of the chord
@@ -52,8 +54,6 @@ Aural.Music.Chord.prototype.getType = function() {
  * @returns {Aural.Music.Note[]} Notes
  */
 Aural.Music.Chord.prototype.getNotes = function() {
-	octave = octave || 0;
-
 	var notes = [];
 	var current = this.getKeyOffset();
 	
@@ -101,6 +101,7 @@ Aural.Music.Chord.prototype.transpose = function(intervals) {
 	var offset = this.getKeyOffset() + intervals;
 	var label = Aural.Music.Note.getLabelFromMidi(offset);
 	this.key = label[0];
+	this.octave = label[1];
 };
 
 /**
@@ -108,7 +109,7 @@ Aural.Music.Chord.prototype.transpose = function(intervals) {
  * @returns {integer} Offset
  */
 Aural.Music.Chord.prototype.getKeyOffset = function() {
-	return Aural.Music.Note.getMidiFromLabel(this.key);
+	return Aural.Music.Note.getMidiFromLabel(this.key, this.octave);
 };
 
 /**
@@ -116,6 +117,6 @@ Aural.Music.Chord.prototype.getKeyOffset = function() {
  * @param {string} key - Desired key (ie: C, D#, ...)
  * @returns {Aural.Music.Scale} Keyed chord
  */
-Aural.Music.Chord.prototype.copy = function(key) {
-	return new Aural.Music.Chord(this.intervals, this.shortname, this.name, key);
+Aural.Music.Chord.prototype.copy = function(key, octave) {
+	return new Aural.Music.Chord(this.intervals, this.shortname, this.name, key, octave);
 };

@@ -21,7 +21,6 @@ Aural.Music.IntervalList.addInterval(650,                         ['equal-temper
 Aural.Music.IntervalList.addInterval(700,                         ['equal-tempered perfect fifth']);
 Aural.Music.IntervalList.addInterval(800,                         ['equal-tempered minor sixth']);
 Aural.Music.IntervalList.addInterval(850,                         ['equal-tempered neutral sixth']);
-Aural.Music.IntervalList.addInterval(850,                         ['equal-tempered neutral sixth']);
 Aural.Music.IntervalList.addInterval(900,                         ['equal-tempered major sixth']);
 Aural.Music.IntervalList.addInterval(1000,                        ['equal-tempered minor seventh']);
 Aural.Music.IntervalList.addInterval(1050,                        ['equal-tempered neutral seventh']);
@@ -52,11 +51,8 @@ Aural.Music.IntervalList.addInterval(1200 / 7,                    ['7tet step', 
 Aural.Music.IntervalList.addInterval(1200 / 5,                    ['5tet step', 'five equal temperament step']);
 Aural.Music.IntervalList.addInterval(50,                          ['quarter tone', '24tet step', 'twenty-four equal temperament step']);
 
-
-
 Aural.Music.IntervalList.addInterval(35.1,                        ['gamma scale step']);
 Aural.Music.IntervalList.addInterval(63.8,                        ['beta scale step']);
 Aural.Music.IntervalList.addInterval(78,                          ['alpha scale step']);
-
 
 Aural.Music.IntervalList.addInterval(833.09,                      ['golden ratio']);
