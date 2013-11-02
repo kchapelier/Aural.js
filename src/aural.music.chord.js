@@ -7,10 +7,10 @@ Aural.Music.Chord = function(intervals, shortname, name, key) {
 	this.key = key || 'C';
 };
 
-Aural.Music.Scale.prototype.intervals = null;
-Aural.Music.Scale.prototype.name = null;
-Aural.Music.Scale.prototype.shortname = null;
-Aural.Music.Scale.prototype.key = null;
+Aural.Music.Chord.prototype.intervals = null;
+Aural.Music.Chord.prototype.name = null;
+Aural.Music.Chord.prototype.shortname = null;
+Aural.Music.Chord.prototype.key = null;
 
 /**
  * Get the type of the chord
@@ -116,6 +116,6 @@ Aural.Music.Chord.prototype.getKeyOffset = function() {
  * @param {string} key - Desired key (ie: C, D#, ...)
  * @returns {Aural.Music.Scale} Keyed chord
  */
-Aural.Music.Chord.prototype.createCopy = function(key) {
+Aural.Music.Chord.prototype.copy = function(key) {
 	return new Aural.Music.Chord(this.intervals, this.shortname, this.name, key);
 };

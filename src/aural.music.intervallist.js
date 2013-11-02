@@ -36,8 +36,9 @@ Aural.Music.IntervalList = {
 		switch(typeof identifier) {
 			case 'float':
 			case 'integer':
+			case 'number':
 				identifier = Math.abs(identifier);
-				interval = !!this.intervals[deltaCents] ? this.intervals[deltaCents] : null;
+				interval = !!this.intervals[identifier] ? this.intervals[identifier] : null;
 				break;
 			case 'string':
 				for(var key in this.intervals) {

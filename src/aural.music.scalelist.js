@@ -60,7 +60,7 @@ Aural.Music.ScaleList = {
 			
 			if(correct) {
 				var label = Aural.Music.Note.getLabelFromMidi(intervals.offset - offset + 12);
-				correctScales.push(scale.createCopy(label[0]));
+				correctScales.push(scale.copy(label[0]));
 			}
 		}
 		
@@ -144,7 +144,7 @@ Aural.Music.ScaleList = {
 		for(var i = 0, l = this.scales.length; i < l; i++) {
 			for(var k = 0, l2 = this.scales[i].titles.length; k < l2; k++) {
 				if(this.scales[i].titles[k] == name) {
-					return this.scales[i].createCopy(key);
+					return this.scales[i].copy(key);
 				}
 			}
 		}

@@ -5,7 +5,7 @@ Aural.Music.Interval = function(titles, cents) {
 	this.cents = cents;
 };
 
-Aural.Music.Interval.prototype.title = null;
+Aural.Music.Interval.prototype.titles = null;
 Aural.Music.Interval.prototype.cents = null;
 
 /**

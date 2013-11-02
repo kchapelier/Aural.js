@@ -18,7 +18,6 @@ Aural.Music.ChordList.addChord([0, 2, 5],           'sus2', 'suspended second');
 Aural.Music.ChordList.addChord([0, 5, 2],           'sus4', 'suspended fourth');
 Aural.Music.ChordList.addChord([0, 5, 3],           'augsus4', 'suspended fourth');
 
-
 //TETRACHORD
 Aural.Music.ChordList.addChord([0, 4, 3, 3],        '7', 'dominant seventh');
 Aural.Music.ChordList.addChord([0, 4, 3, 4],        'M7', 'major seventh');

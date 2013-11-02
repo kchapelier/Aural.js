@@ -166,6 +166,23 @@ Aural.Music.Scale.prototype.getNotesAsLabels = function() {
 };
 
 /**
+ * Get all the intervals of a given scale
+ * @return {Aural.Music.Interval[]} Array of intervals
+ */
+Aural.Music.Scale.prototype.getIntervals = function() {
+	var intervals = [];
+	var current = 0;
+
+	for(var i = 0, l = this.intervals.length; i < l; i++) {
+		intervals.push(Aural.Music.IntervalList.getInterval(current));
+		current+= 100 * this.intervals[i];
+		console.log(current);
+	}
+
+	return intervals;
+};
+
+/**
  * Define the key of the scale
  * @param {string} key - Key
  */
@@ -188,7 +205,7 @@ Aural.Music.Scale.prototype.transpose = function(intervals) {
  * @returns {integer} Offset
  */
 Aural.Music.Scale.prototype.getKeyOffset = function() {
-	return Aural.Music.Note.getMidiFromLabel(this.key);
+	return Aural.Music.Note.getMidiFromLabel(this.key) % 12;
 };
 
 /**
@@ -196,6 +213,6 @@ Aural.Music.Scale.prototype.getKeyOffset = function() {
  * @param {string} key - Desired key (ie: C, D#, ...)
  * @returns {Aural.Music.Scale} Keyed scale
  */
-Aural.Music.Scale.prototype.createCopy = function(key) {
+Aural.Music.Scale.prototype.copy = function(key) {
 	return new Aural.Music.Scale(this.titles, this.intervals, key);
 };
