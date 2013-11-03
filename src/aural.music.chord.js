@@ -1,11 +1,12 @@
 "use strict";
 
+//TODO : implement and test getIntervals()
+
 Aural.Music.Chord = function(intervals, shortname, name, key, octave) {
 	this.name = name;
 	this.shortname = shortname;
 	this.intervals = intervals;
-	this.key = key || 'C';
-	this.octave = octave || 0;
+	this.setKey(key || 'C', octave);
 };
 
 Aural.Music.Chord.prototype.intervals = null;
@@ -87,10 +88,13 @@ Aural.Music.Chord.prototype.getNotesAsLabels = function() {
 
 /**
  * Define the key of the chord
- * @param {string} key - Key
+ * @param {string} key - Key (ie: C, D#, Eb2, ...)
+ * @param {integer} Octave - Octave
  */
-Aural.Music.Chord.prototype.setKey = function(key) {
-	this.key = key;
+Aural.Music.Chord.prototype.setKey = function(key, octave) {
+	var label = Aural.Music.Note.parseLabel(key);
+	this.key = label[0];
+	this.octave = octave || label[1];
 };
 
 /**
@@ -114,7 +118,8 @@ Aural.Music.Chord.prototype.getKeyOffset = function() {
 
 /**
  * Create a copy of this chord in another key
- * @param {string} key - Desired key (ie: C, D#, ...)
+ * @param {string} key - Desired key (ie: C, D#, Eb2, ...)
+ * @param {integer} Octave - Octave
  * @returns {Aural.Music.Scale} Keyed chord
  */
 Aural.Music.Chord.prototype.copy = function(key, octave) {

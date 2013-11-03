@@ -5,7 +5,7 @@
 Aural.Music.Scale = function(titles, intervals, key) {
 	this.titles = titles;
 	this.intervals = intervals;
-	this.key = key || 'C';
+	this.setKey(key || 'C');
 };
 
 Aural.Music.Scale.prototype.titles = null;
