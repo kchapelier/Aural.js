@@ -112,6 +112,23 @@ Aural.Utils.XHR = {
 		request.open('GET', url, true);
 		
 		switch(type) {
+			case 'sfz':
+				request.onload = function() {
+					var file = Aural.Utils.Sfz.File.loadFromString(request.response);
+					
+					if(callback) {
+						callback(file);
+					}
+				};
+				
+				request.onerror = function() {
+					if(callbackError) {
+						callbackError(request);
+					}
+				};
+				
+				request.send();
+				break;
 			case 'audio':
 				request.responseType = 'arraybuffer';
 
