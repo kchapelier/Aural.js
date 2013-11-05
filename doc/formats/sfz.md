@@ -33,18 +33,23 @@ The following parameters are implemented :
 
 To be implemented :
 
- * offset
- * end
- * transpose
- * tune
- * pitch_keycenter
+ * a custom opcode to aleviate the format support issue in browsers
+ * offset, offset_random and end, useful to limit the number of audio files to load
+ * loop_mode, loop_start and loop_end
+ * transpose and tune
+ * pitch_keycenter, pitch_keytrack and pitch_random
  * volume
  * pan
- * lobpm
- * hibpm
+ * lobpm and hibpm
+ * lochan and hichan
+ * sw_last, sw_lokey and sw_hikey
+ * sw_up, sw_down and sw_previous
+ * sw_vel
+ * trigger
 
 
 Sources
 -------
 
 Complete official specifications : http://www.cakewalk.com/DevXchange/article.aspx?aid=108
+ARIA specific opcodes : http://ariaengine.com/forums/index.php?p=/discussion/4389/arias-custom-opcodes/p1

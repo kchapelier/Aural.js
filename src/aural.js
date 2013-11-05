@@ -17,14 +17,14 @@ var Aural = {
 		Interpolation : null,
 		Automation : null,
 		Buffer : null,
-		Soundfont : null,
 		Wavelet : null,
 		WaveletPlayer : null
 	},
 	Utils : {
 		Scala : null,
 		XHR : null,
-		Support : null
+		Support : null,
+		Sfz : null
 	},
 	Info : {
 		version : '-',

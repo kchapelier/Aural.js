@@ -103,7 +103,7 @@ Aural.Utils.XHR = {
 	/**
 	 * Execute one request
 	 * @param {string} url - Url
-	 * @param {string} type - Type expected (audio for an AudioBuffer, arraybuffer for an ArrayBuffer)
+	 * @param {string} type - Type expected (sfz for a soundfont file, audio for an AudioBuffer, array for an ArrayBuffer)
 	 * @param {function} callback - Callback on complete
 	 * @param {function} callbackError - Callback on failure
 	 */
@@ -144,7 +144,7 @@ Aural.Utils.XHR = {
 
 				request.send();
 				break;
-			case 'arraybuffer':
+			case 'array':
 				request.responseType = 'arraybuffer';
 
 				request.onload = function() {
