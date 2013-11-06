@@ -1,7 +1,5 @@
 "use strict";
 
-//TODO : implement and test getIntervals()
-
 Aural.Music.Chord = function(intervals, shortname, name, key, octave) {
 	this.name = name;
 	this.shortname = shortname;
@@ -48,6 +46,21 @@ Aural.Music.Chord.prototype.getType = function() {
 		default:
 			return '';
 	}
+};
+
+/**
+ * Get all the intervals of the chord
+ * @return {Aural.Music.Interval[]} Array of intervals
+ */
+Aural.Music.Chord.prototype.getIntervals = function() {
+	var intervals = [];
+	var current = 0;
+	for(var i = 0, l = this.intervals.length; i < l; i++) {
+		current+= 100 * this.intervals[i];
+		intervals.push(Aural.Music.IntervalList.getInterval(current));
+	}
+
+	return intervals;
 };
 
 /**

@@ -145,3 +145,24 @@ test('chord get notes', function() {
 	equal(notes[2].cents, 0, '3rd note of the B3 minor chord should be');
 	equal(notes[2].midi, 66, '3rd note of the B3 minor chord should be midi value 66');
 });
+
+test('chord get interval', function() {
+	var chord = Aural.Music.ChordList.getChord('major', 'A');
+	var intervals = chord.getIntervals();
+
+	equal(intervals.length, 3, 'there should be 3 intervals in a major chord');
+
+	equal(intervals[0].cents, 0, '1st interval of a major chord should be of 0 cents');
+	equal(intervals[1].cents, 400, '2nd interval of a major chord should be of 400 cents');
+	equal(intervals[2].cents, 700, '3rd interval of a major chord should be of 700 cents');
+	
+	chord = Aural.Music.ChordList.getChord('dim7');
+	intervals = chord.getIntervals();
+
+	equal(intervals.length, 4, 'there should be 4 intervals in a diminished seventh chord');
+	
+	equal(intervals[0].cents, 0, '1st interval of a diminished seventh chord should be of 0 cents');
+	equal(intervals[1].cents, 300, '2nd interval of a diminished seventh chord should be of 300 cents');
+	equal(intervals[2].cents, 600, '3rd interval of a diminished seventh chord should be of 600 cents');
+	equal(intervals[3].cents, 900, '4th interval of a diminished seventh chord should be of 900 cents');
+});
