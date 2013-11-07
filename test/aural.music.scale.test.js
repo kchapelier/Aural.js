@@ -169,3 +169,31 @@ test('scale get notes', function() {
 	equal(notes[4].cents, 0, '5th note in 2nd octave of D minor penta scale should be 0cts');
 	equal(notes[4].midi, 48, '5th note in 2nd octave of D minor penta scale should be midi value 48');
 });
+
+test('scale contains chords', function() {
+	var scale = Aural.Music.ScaleList.getScale('major', 'C#');
+
+	equal(scale.containsChord(Aural.Music.ChordList.getChord('C#')), true);
+	equal(scale.containsChord(Aural.Music.ChordList.getChord('C#m')), false);
+	equal(scale.containsChord(Aural.Music.ChordList.getChord('C#dim')), false);
+	equal(scale.containsChord(Aural.Music.ChordList.getChord('C#7')), true);
+	equal(scale.containsChord(Aural.Music.ChordList.getChord('C#M7')), true);
+	equal(scale.containsChord(Aural.Music.ChordList.getChord('C#m7')), false);
+	
+	equal(scale.containsChord(Aural.Music.ChordList.getChord('A#')), false);
+	equal(scale.containsChord(Aural.Music.ChordList.getChord('A#m')), true);
+	equal(scale.containsChord(Aural.Music.ChordList.getChord('A#dim')), false);
+	equal(scale.containsChord(Aural.Music.ChordList.getChord('A#7')), false);
+	equal(scale.containsChord(Aural.Music.ChordList.getChord('A#M7')), false);
+	equal(scale.containsChord(Aural.Music.ChordList.getChord('A#m7')), true);
+});
+
+test('scale get chords', function() {
+	var scale1 = Aural.Music.ScaleList.getScale('minor', 'A');
+	var scale2 = Aural.Music.ScaleList.getScale('major', 'C');
+
+	var chords1 = scale1.getChords();
+	var chords2 = scale2.getChords();
+
+	equal(chords1.length, chords2.length);
+});

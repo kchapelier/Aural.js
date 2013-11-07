@@ -1,7 +1,5 @@
 "use strict";
 
-//TODO : Get all possible chords for a given scale
-
 Aural.Music.Scale = function(titles, intervals, key) {
 	this.titles = titles;
 	this.intervals = intervals;
@@ -100,9 +98,9 @@ Aural.Music.Scale.prototype.getHemitonicType = function(resultType) {
 Aural.Music.Scale.prototype.getType = function() {
 	switch(this.intervals.length) {
 		case 1:
-			return 'monotonic'; //http://en.wikipedia.org/wiki/Monotonic_scale
+			return 'monotonic';
 		case 2:
-			return 'ditonic'; //http://en.wikipedia.org/wiki/Ditonic_scale
+			return 'ditonic';
 		case 3:
 			return 'tritonic';
 		case 4:
@@ -166,7 +164,7 @@ Aural.Music.Scale.prototype.getNotesAsLabels = function() {
 };
 
 /**
- * Get all the intervals of a given scale
+ * Get all the intervals of the scale
  * @return {Aural.Music.Interval[]} Array of intervals
  */
 Aural.Music.Scale.prototype.getIntervals = function() {
@@ -179,6 +177,48 @@ Aural.Music.Scale.prototype.getIntervals = function() {
 	}
 
 	return intervals;
+};
+
+/**
+ * Get all chords contained in the scale
+ * @return {Aural.Music.Chord[]} Array of chords
+ */
+Aural.Music.Scale.prototype.getChords = function(octave) {
+	octave = octave || 0;
+	var chords = Aural.Music.ChordList.chords;
+	var matchingChords = [];
+
+	for(var ic = 0, lc = chords.length; ic < lc; ic++) {
+		for(var note = 0; note < 12; note++) {
+			var chord = chords[ic].copy(Aural.Music.Note.getLabelFromMidi(note + octave * 12).join(''));
+			if(this.containsChord(chord)) {
+				matchingChords.push(chord);
+			}
+		}
+	}
+
+	return matchingChords;
+};
+
+/**
+ * Check whether a given chord is contained within the scale
+ * @param {Aural.Music.Chord} chord - Chord
+ * @return {boolean} 
+ */
+Aural.Music.Scale.prototype.containsChord = function(chord) {
+	var contained = true;
+	
+	var chordNotes = chord.getNotesAsLabels();
+	var scaleNotes = this.getNotesAsLabels();
+
+	for(var i = 0, l = chordNotes.length; i < l; i++) {
+		if(scaleNotes.indexOf(chordNotes[i]) == -1) {
+			contained = false;
+			break;
+		}
+	}
+
+	return contained;
 };
 
 /**
