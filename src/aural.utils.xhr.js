@@ -1,13 +1,10 @@
 "use strict";
 
-//TODO: Externalize the instanciation of the AudioContext
-
 /**
  * XmlHttpRequest helper specialized in handling files and multiple requests at once
  * @type {object}
  */
 Aural.Utils.XHR = {
-	audioContext : null,
 	preferredMode : 'serial',
 	/**
 	 * Executes multiple requests 
@@ -185,7 +182,7 @@ Aural.Utils.XHR = {
 	 * @param {function} callbackError - Callback on error
 	 */
 	decodeAudio : function(arrayBuffer, callback, callbackError) {
-		Aural.Utils.XHR.audioContext = Aural.Utils.XHR.audioContext || new webkitAudioContext();
-		Aural.Utils.XHR.audioContext.decodeAudioData(arrayBuffer, callback, callbackError);
+		var ac = Aural.Utils.Support.getAudioContext();
+		ac.decodeAudioData(arrayBuffer, callback, callbackError);
 	}
 };

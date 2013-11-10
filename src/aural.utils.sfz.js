@@ -1,7 +1,5 @@
 "use strict";
 
-Aural.Utils.Sfz = {};
-
 Aural.Utils.Sfz.Region = function() {
 	this.innerSequence = 0;
 };

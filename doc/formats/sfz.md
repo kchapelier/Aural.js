@@ -53,3 +53,4 @@ Sources
 
 Complete official specifications : http://www.cakewalk.com/DevXchange/article.aspx?aid=108
 ARIA specific opcodes : http://ariaengine.com/forums/index.php?p=/discussion/4389/arias-custom-opcodes/p1
+Peter L Jones' sfz bits : http://www.drealm.info/sfz/

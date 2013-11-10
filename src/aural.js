@@ -15,16 +15,18 @@ var Aural = {
 	},
 	Sound : {
 		Interpolation : null,
-		Automation : null,
-		Buffer : null,
-		Wavelet : null,
-		WaveletPlayer : null
+		Wavelet : {
+			Wavelet : null,
+			Collection : null
+		}
 	},
 	Utils : {
-		Scala : null,
 		XHR : null,
 		Support : null,
-		Sfz : null
+		Sfz : {
+			Region : null,
+			File : null
+		}
 	},
 	Info : {
 		version : '-',

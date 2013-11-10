@@ -1,9 +1,8 @@
 "use strict";
 
 //TODO: Use interpolation when available
-//TODO: Actually test with an arraybuffer
 
-Aural.Sound.Wavelet = function(buffer) {
+Aural.Sound.Wavelet.Wavelet = function(buffer) {
 	this.polarity = (buffer[0] > 0 || buffer[buffer.length - 1] > 0 ) ? 1 : - 1;
 	
 	this.length = buffer.length;
@@ -15,21 +14,51 @@ Aural.Sound.Wavelet = function(buffer) {
 	}
 };
 
-Aural.Sound.Wavelet.prototype.buffer = null;
-Aural.Sound.Wavelet.prototype.length = null;
-Aural.Sound.Wavelet.prototype.polarity = null;
-Aural.Sound.Wavelet.prototype.maxValue = null;
+Aural.Sound.Wavelet.Wavelet.prototype.buffer = null;
+Aural.Sound.Wavelet.Wavelet.prototype.length = null;
+Aural.Sound.Wavelet.Wavelet.prototype.polarity = null;
+Aural.Sound.Wavelet.Wavelet.prototype.maxValue = null;
 
 /**
  * Get a specific sample
  * @param {float} pos - Position in the sample
  * @param {boolean} normalize - Whether to normalize the samples based on the max value of the wavelet
+ * @param {integer} desiredPolarity - Desired polarity (1 or -1)
  * @return {float} Sound sample
  */
-Aural.Sound.Wavelet.prototype.getSample = function(pos, normalize) {
+Aural.Sound.Wavelet.Wavelet.prototype.getSample = function(pos, normalize, desiredPolarity) {
 	var result = this.buffer[pos % this.buffer.length];
 	
-	return (normalize ? result / this.maxValue : result);
+	result = (normalize ? result / this.maxValue : result);
+
+	if(desiredPolarity === 1 || desiredPolarity === -1) {
+		result = result * desiredPolarity * this.polarity;
+	}
+
+	return result;
+};
+
+Aural.Sound.Wavelet.Collection = function(wavelets) {
+	this.setWavelets(wavelets);
+	this.currentPolarity = -1;
+	this.currentWavelet = -1;
+};
+
+/**
+ * Set the wavelet collection
+ * @param {Aural.Sound.Wavelet|ArrayBuffer} wavelets - Array of wavelets or buffer of samples to process
+ */
+Aural.Sound.Wavelet.Collection.prototype.setWavelets = function(wavelets) {
+	if(wavelets.length > 0) {
+		if(typeof wavelets[0] != 'object') {
+			wavelets = this.processAudio(wavelets);
+		}
+	} else {
+		wavelets = [];
+	}
+
+	this.wavelets = wavelets;
+	this.length = this.wavelets.length;
 };
 
 /**
@@ -38,24 +67,29 @@ Aural.Sound.Wavelet.prototype.getSample = function(pos, normalize) {
  * @param {[type]} maxWavelets - Maximum number of wavelets to return
  * @return {Aural.Sound.Wavelet[]} Array of wavelets
  */
-Aural.Sound.Wavelet.process = function(buffer, maxWavelets) {
+Aural.Sound.Wavelet.Collection.prototype.processAudio = function(buffer, maxWavelets) {
 	var wavelets = [];
 	
 	var current = buffer[0];
 	var startPos = 0;
+	var subBuffer = null;
 	
 	for(var i = 1; i < buffer.length; i++) {
 		if((current > 0 && buffer[i] <= 0) || (current <= 0 && buffer[i] >= 0)) {
 			current = buffer[i];
 			
-			var subBuffer = buffer.slice(startPos, i - 1);
+			subBuffer = null;
 			
-			if(subBuffer.length > 4) {
-				wavelets.push(new Aural.Sound.Wavelet(subBuffer));
+			if(buffer.subarray) {
+				subBuffer = buffer.subarray(startPos, i);
+			} else {
+				subBuffer = buffer.slice(startPos, i);
+			}
+			
+			wavelets.push(new Aural.Sound.Wavelet.Wavelet(subBuffer));
 
-				if(maxWavelets > 0 && maxWavelets <= wavelets.length) {
-					break;
-				}
+			if(maxWavelets > 0 && maxWavelets <= wavelets.length) {
+				break;
 			}
 			
 			startPos = i;
@@ -63,4 +97,47 @@ Aural.Sound.Wavelet.process = function(buffer, maxWavelets) {
 	}
 	
 	return wavelets;
+};
+
+Aural.Sound.Wavelet.Collection.prototype.wavelets = null;
+Aural.Sound.Wavelet.Collection.prototype.length = null;
+Aural.Sound.Wavelet.Collection.prototype.currentPolarity = null;
+Aural.Sound.Wavelet.Collection.prototype.currentWavelet = null;
+
+Aural.Sound.Wavelet.Collection.prototype.get = function(index) {
+	var position = index % this.wavelets.length;
+	var wavelet = this.wavelets[position];
+	
+	return wavelet;
+};
+
+Aural.Sound.Wavelet.Collection.prototype.next = function() {
+	var position = (this.currentWavelet + 1) % this.wavelets.length;
+	var wavelet = this.wavelets[position];
+
+	this.currentWavelet = position;
+
+	return wavelet;
+};
+
+Aural.Sound.Wavelet.Collection.prototype.random = function() {
+	var desiredPolarity = this.currentPolarity * -1;
+	var found = false;
+	var position = null;
+	var wavelet = null;
+	
+	while(!found) {
+		position = Math.floor(Math.random() * this.wavelets.length);
+		
+		if(position != this.currentWavelet) {
+			wavelet = this.wavelets[position];
+			
+			if(wavelet.polarity == desiredPolarity) {
+				found = true;
+			}
+		}
+	}
+	
+	this.currentPolarity = wavelet.polarity;
+	this.currentWavelet = position;
 };
