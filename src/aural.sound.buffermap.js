@@ -186,47 +186,43 @@ Aural.Sound.BufferMap.prototype.getVolumeMap = function() {
 };
 
 Aural.Sound.BufferMap.prototype.processTransientsMap = function() {
-	var ipos = 0;
+	var pos = 0;
 	var previous = 0;
 	var sample = 0;
-	var previous = 0;
-	
+	var min = 0;
+	var max = 0;
+
+	var volumeMap = this.getVolumeMap();
+
 	var tgate = this.transientMapGate;
 	var tlimiting = this.transientMapLimiting;
 	
-	var transients = {
-		0 : [0,0]
-	};
-	
-	for(var i = 0, l = this.volumeMap.length; i < l; i++) {
-		sample = Math.abs(this.volumeMap[i]);
-		if(sample - previous > tgate) {
-			var min = sample;
-			var max = sample;
-			var advance = 0;
-			
-			while(sample >= max || advance < tlimiting) {
-				i++;
-				advance++;
-				
-				sample = Math.abs(this.volumeMap[i]);
-				
-				if(max < sample) {
-					max = sample;
-					advance = 0;
-				}
-				
-				if(min > sample) {
-					min = sample;
-				}
-			}
-			
-			transients[i] = [min, max];
+	tlimiting = 0.95;
+	tgate = 0.2;
+	var tspace = 2000;
+	var ispace = 0;
+	var transients = [];
+
+	for(var i = 0, l = volumeMap.length; i < l; i++) {
+		sample = this.volumeMap[i];
+		max = min = sample;
+
+		if(Math.sqrt(sample - previous) > 0.1 && sample > tgate && ispace < 1) {
+			transients.push({
+				'position' : i,
+				'min' : min,
+				'max' : max
+			});
+
+			previous = sample;
+			ispace = tspace;
+		} else {
+			previous = previous * tlimiting + sample * (1 - tlimiting);
+			ispace--;
 		}
-		previous = sample;
+
+
 	}
-	
-	transients[this.buffer.length] = [0,0];
 	
 	this.transientMap = transients;
 };
