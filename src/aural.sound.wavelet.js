@@ -1,7 +1,5 @@
 "use strict";
 
-//TODO: Use interpolation when available
-
 Aural.Sound.Wavelet.Wavelet = function(buffer) {
 	this.polarity = (buffer[0] > 0 || buffer[buffer.length - 1] > 0 ) ? 1 : - 1;
 	
@@ -27,7 +25,7 @@ Aural.Sound.Wavelet.Wavelet.prototype.maxValue = null;
  * @return {float} Sound sample
  */
 Aural.Sound.Wavelet.Wavelet.prototype.getSample = function(pos, normalize, desiredPolarity) {
-	var result = this.buffer[pos % this.buffer.length];
+	var result = Aural.Sound.Interpolation.process(pos, this.buffer);
 	
 	result = (normalize ? result / this.maxValue : result);
 
@@ -107,7 +105,7 @@ Aural.Sound.Wavelet.Collection.prototype.currentWavelet = null;
 Aural.Sound.Wavelet.Collection.prototype.get = function(index) {
 	var position = index % this.wavelets.length;
 	var wavelet = this.wavelets[position];
-	
+
 	return wavelet;
 };
 

@@ -73,10 +73,10 @@ Aural.Utils.XHR = {
 				function(data) {
 					if(!error) {
 						if(callbackFile) {
-							callbackFile(data, file.id, file.url)
+							callbackFile(data, file.id, file.url);
 						}
 
-						loaded++
+						loaded++;
 
 						if(loaded == files.length && callbackFinal) {
 							callbackFinal();

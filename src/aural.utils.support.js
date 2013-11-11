@@ -18,7 +18,7 @@ if(!!window['AudioContext']) {
  * @return {boolean} Support
  */
 Aural.Utils.Support.isAudioContextSupported = function() {
-	return (this.audioContextClass != null);
+	return (this.audioContextClass !== null);
 };
 
 /**
