@@ -14,6 +14,7 @@ var Aural = {
 		IntervalList : null
 	},
 	Sound : {
+		BufferMap : null,
 		Interpolation : null,
 		Wavelet : {
 			Wavelet : null,
