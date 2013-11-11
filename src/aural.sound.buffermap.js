@@ -57,86 +57,124 @@ Aural.Sound.BufferMap.prototype.setTransientMapLimiting = function(tlimiting) {
 	this.transientMap = null;
 };
 
-Aural.Sound.BufferMap.prototype.processVolumeMap = function() {
-	var previous = 0;
-	var previousPeak = 0;
-	var sample = 0;
-	var nextSample = 0;
-	
-	var vgate = this.volumeMapGate;
-	var vsmoothing = this.volumeMapSmoothing;
-	var vlimiting = this.volumeMapLimiting;
-	
+Aural.Sound.BufferMap.prototype.processPolarVolumeMap = function(wavelets, polarity) {
 	var peaks = {
 		'0' : 0
 	};
-	
-	var wavelets = new Aural.Sound.Wavelet.Collection(this.buffer);
-	var pos = 0;
-	var wavelet;
+
+	var vgate = this.volumeMapGate;
+	var vsmoothing = this.volumeMapSmoothing;
+	var vlimiting = this.volumeMapLimiting;
+
 	var min = 0;
 	var max = 0;
 	var advance = 0;
 	var duration = 0;
 	var maxOffset = 0;
+
+	var previous = 0;
+	var previousPeak = 0;
+	var sample = 0;
+	var nextSample = 0;
+	var pos = 0;
+	var wavelet;
+
 	for(var i = 0, l = wavelets.length; i < l; i++) {
 		wavelet = wavelets.wavelets[i];
 
-		sample = Math.pow(wavelet.maxValue * 10, 2);
+		if(wavelet.polarity != polarity) {
+			pos+= wavelet.length;
+			continue;
+		}
 
-		min = sample;
+		sample = wavelet.maxValue;
+		sample = sample > vgate ? wavelet.maxValue : 0;
+
 		max = sample;
 		maxOffset = 0;
 		advance = 0;
 		duration = 0;
 
-		nextSample = Math.abs(i + 1 < l ? wavelets.get(i + 1).maxValue : 0);
+		while(sample >= max && advance < vlimiting) {
+			i++;
+			advance++;
 
-		if(sample < vgate) {
-			sample = 0;
-		}
+			var nextWavelet = !!wavelets.wavelets[i] ? wavelets.wavelets[i] : null;
 
-		if(sample > previous && sample > nextSample) {
-			if(Math.abs(sample - previousPeak) > vsmoothing) {
-				while(sample >= max || advance < vlimiting) {
-					i++;
-					advance++;
-					
-					var nextSample = Math.pow(wavelets.wavelets[i].maxValue * 10, 2);
+			if(nextWavelet && nextWavelet.polarity == polarity) {
+				var nextSample = nextWavelet.maxValue;
 
-					if(max < nextSample) {
-						if(nextSample - max > (vsmoothing * Math.sqrt(vlimiting))) {
-							i--;
-							break;
-						}
-
-						max = nextSample;
-						advance = 0;
-						maxOffset = duration;
+				if(max < nextSample) {
+					if(nextSample - max > (Math.sqrt(vlimiting) / 10000)) {
+						i--;
+						break;
 					}
 
-					if(min > nextSample) {
-						min = nextSample;
-					}
-
-					sample = nextSample;
-					duration+= wavelets.wavelets[i].length;
+					max = nextSample;
+					advance = 0;
+					maxOffset = duration;
 				}
 
-
-				peaks[pos + maxOffset] = Math.sqrt(max) / 10;
-				previousPeak = max;
+				sample = nextSample;
 			}
+
+			duration+= nextWavelet ? nextWavelet.length : 0;
 		}
 
-		previous = sample;
-		pos+= wavelet.length + duration;
+		peaks[pos + maxOffset] = max;
 
+		pos+= wavelet.length + duration;
 	}
 
 	peaks[this.buffer.length - 1] = 0;
-	
-	this.volumeMap = peaks;
+
+	var previousPos = 0;
+	var previousPeak = 0;
+	var sample = 0;
+
+	var map = new Float32Array(this.buffer.length);
+
+	for(var key in peaks) {
+		key*=1;
+		sample = peaks[key];
+
+		sample = sample < previousPeak ? sample * (1 - vsmoothing) + previousPeak * vsmoothing : sample;
+
+		map[key] = sample;
+
+		var duration = key - previousPos;
+
+		var start = previousPos;
+
+		for(; previousPos < key; previousPos++) {
+			map[previousPos] = Aural.Sound.Interpolation.linear((previousPos - start) / duration, [previousPeak, sample]);
+		}
+
+		previousPeak = sample;
+		previousPos = key;
+	}
+
+	return map;
+};
+
+Aural.Sound.BufferMap.prototype.processVolumeMap = function() {
+	var vgate = this.volumeMapGate;
+	var vsmoothing = this.volumeMapSmoothing;
+	var vlimiting = this.volumeMapLimiting;
+
+	var wavelets = new Aural.Sound.Wavelet.Collection(this.buffer);
+
+	var positiveMap = this.processPolarVolumeMap(wavelets, 1);
+	var negativeMap = this.processPolarVolumeMap(wavelets, -1);
+
+	//make the smooth envelope
+	var volumeMap = new Float32Array(this.buffer.length);
+
+	for(var i = 0, l = volumeMap.length; i < l; i++) {
+		volumeMap[i] = Math.max(negativeMap[i], positiveMap[i]);
+	}
+
+	this.volumeMap = volumeMap;
 };
 
 Aural.Sound.BufferMap.prototype.getVolumeMap = function() {
@@ -145,4 +183,58 @@ Aural.Sound.BufferMap.prototype.getVolumeMap = function() {
 	}
 	
 	return this.volumeMap;
+};
+
+Aural.Sound.BufferMap.prototype.processTransientsMap = function() {
+	var ipos = 0;
+	var previous = 0;
+	var sample = 0;
+	var previous = 0;
+	
+	var tgate = this.transientMapGate;
+	var tlimiting = this.transientMapLimiting;
+	
+	var transients = {
+		0 : [0,0]
+	};
+	
+	for(var i = 0, l = this.volumeMap.length; i < l; i++) {
+		sample = Math.abs(this.volumeMap[i]);
+		if(sample - previous > tgate) {
+			var min = sample;
+			var max = sample;
+			var advance = 0;
+			
+			while(sample >= max || advance < tlimiting) {
+				i++;
+				advance++;
+				
+				sample = Math.abs(this.volumeMap[i]);
+				
+				if(max < sample) {
+					max = sample;
+					advance = 0;
+				}
+				
+				if(min > sample) {
+					min = sample;
+				}
+			}
+			
+			transients[i] = [min, max];
+		}
+		previous = sample;
+	}
+	
+	transients[this.buffer.length] = [0,0];
+	
+	this.transientMap = transients;
+};
+
+Aural.Sound.BufferMap.prototype.getTransientsMap = function() {
+	if(this.transientMap === null) {
+		this.processTransientsMap();
+	}
+	
+	return this.transientMap;
 };
