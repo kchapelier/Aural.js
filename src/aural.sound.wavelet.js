@@ -42,9 +42,14 @@ Aural.Sound.Wavelet.Collection = function(wavelets) {
 	this.currentWavelet = -1;
 };
 
+Aural.Sound.Wavelet.Collection.prototype.wavelets = null;
+Aural.Sound.Wavelet.Collection.prototype.length = null;
+Aural.Sound.Wavelet.Collection.prototype.currentPolarity = null;
+Aural.Sound.Wavelet.Collection.prototype.currentWavelet = null;
+
 /**
  * Set the wavelet collection
- * @param {Aural.Sound.Wavelet|ArrayBuffer} wavelets - Array of wavelets or buffer of samples to process
+ * @param {Aural.Sound.Wavelet.Wavelet|ArrayBuffer} wavelets - Array of wavelets or buffer of samples to process
  */
 Aural.Sound.Wavelet.Collection.prototype.setWavelets = function(wavelets) {
 	if(wavelets.length > 0) {
@@ -63,7 +68,7 @@ Aural.Sound.Wavelet.Collection.prototype.setWavelets = function(wavelets) {
  * Process a buffer into an array of wavelets
  * @param {array|ArrayBuffer} buffer - Sound buffer
  * @param {[type]} maxWavelets - Maximum number of wavelets to return
- * @return {Aural.Sound.Wavelet[]} Array of wavelets
+ * @return {Aural.Sound.Wavelet.Wavelet[]} Array of wavelets
  */
 Aural.Sound.Wavelet.Collection.prototype.processAudio = function(buffer, maxWavelets) {
 	var wavelets = [];
@@ -97,11 +102,11 @@ Aural.Sound.Wavelet.Collection.prototype.processAudio = function(buffer, maxWave
 	return wavelets;
 };
 
-Aural.Sound.Wavelet.Collection.prototype.wavelets = null;
-Aural.Sound.Wavelet.Collection.prototype.length = null;
-Aural.Sound.Wavelet.Collection.prototype.currentPolarity = null;
-Aural.Sound.Wavelet.Collection.prototype.currentWavelet = null;
-
+/**
+ * Get the wavelet at the given index
+ * @param {integer} index - Index of the wavelet
+ * @return {Aural.Sound.Wavelet.Wavelet} Wavelet
+ */
 Aural.Sound.Wavelet.Collection.prototype.get = function(index) {
 	var position = index % this.wavelets.length;
 	var wavelet = this.wavelets[position];
@@ -109,6 +114,10 @@ Aural.Sound.Wavelet.Collection.prototype.get = function(index) {
 	return wavelet;
 };
 
+/**
+ * Get the next wavelet
+ * @return {Aural.Sound.Wavelet.Wavelet} Wavelet
+ */
 Aural.Sound.Wavelet.Collection.prototype.next = function() {
 	var position = (this.currentWavelet + 1) % this.wavelets.length;
 	var wavelet = this.wavelets[position];
@@ -118,6 +127,10 @@ Aural.Sound.Wavelet.Collection.prototype.next = function() {
 	return wavelet;
 };
 
+/**
+ * Get a random wavelet
+ * @return {Aural.Sound.Wavelet.Wavelet} Wavelet
+ */
 Aural.Sound.Wavelet.Collection.prototype.random = function() {
 	var desiredPolarity = this.currentPolarity * -1;
 	var found = false;

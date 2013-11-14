@@ -26,5 +26,17 @@ Aural.Sound.Interpolation = {
 		max = (max >= length) ? 0 : max;
 
 		return data[max] * ratio + data[min] * (1 - ratio);
+	},
+	cosine : function(position, data) {
+		var length = data.length,
+			npos = Math.abs(position % length),
+			max = Math.ceil(npos),
+			min = Math.floor(npos),
+			ratio = npos - min;
+
+		max = (max >= length) ? 0 : max;
+
+		ratio = (1 - Math.cos(ratio * Math.PI)) / 2;
+		return data[max] * ratio + data[min] * (1 - ratio)
 	}
 };
