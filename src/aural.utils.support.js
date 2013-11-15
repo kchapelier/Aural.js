@@ -41,4 +41,19 @@ Aural.Utils.Support.getAudioContext = function(identifier) {
 	}
 
 	return context;
-}
+};
+
+/**
+ * Return whether the ArrayBuffer and the TypedArrays are supported
+ * @return {boolean} Support
+ */
+Aural.Utils.Support.isArrayBufferAndTypedArraySupported = function() {
+	var classes = ['ArrayBuffer', 'Uint8Array', 'Int8Array', 'Uint16Array', 'Int16Array', 'Uint32Array', 'Int32Array', 'Float32Array'];
+	var supported = true;
+
+	for(var l = classes.length; l-- && supported;) {
+		supported&= !!window[classes[l]];
+	}
+
+	return supported;
+};

@@ -23,6 +23,9 @@ var Aural = {
 	},
 	Utils : {
 		XHR : null,
+		Midi : {
+			File : null
+		},
 		Support : null,
 		Sfz : {
 			Region : null,
