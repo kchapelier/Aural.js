@@ -31,8 +31,8 @@ Relevent events :
 	FF 58 04 nn dd cc bb 00 : Time signature
 	FF 59 02 xx xx 00 : Key signature
 
-	80 nn vv 00 : Note off, note, velocity
-	90 nn vv 00 : Note on, note, velocity
+	8c nn vv 00 : Note off, note, velocity
+	9c nn vv 00 : Note on, note, velocity
 
 	FF 2f 00 : end of track
 
