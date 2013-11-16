@@ -24,6 +24,7 @@ var Aural = {
 	Utils : {
 		XHR : null,
 		Midi : {
+			ControlChangesDictionary : null,
 			File : null
 		},
 		Support : null,

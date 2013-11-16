@@ -19,6 +19,7 @@ Track header :
 
 Relevent events :
 	
+	FF 01 ll xx+ 00 : General purpose text event
 	FF 02 ll xx+ 00 : Copyright notice
 	FF 03 ll xx+ 00 : Sequence label
 	FF 04 ll xx+ 00 : Instrument name
@@ -27,7 +28,7 @@ Relevent events :
 	FF 07 ll xx+ 00 : Cue point
 	FF 7F ll xx+ 00 : Sequencer specific meta-event
 
-	FF 51 03 tt 00 : Tempo
+	FF 51 03 tt tt tt 00 : Tempo
 	FF 58 04 nn dd cc bb 00 : Time signature
 	FF 59 02 xx xx 00 : Key signature
 
