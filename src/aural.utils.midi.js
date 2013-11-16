@@ -1,79 +1,5 @@
 "use strict";
 
-function wvl(value) {
-	var buffer = value & 0x7F;
-	
-	while((value >>= 7)) {
-		buffer <<= 8;
-		buffer |= ((value & 0x7F) | 0x80);
-	}
-	
-	var result = '';
-	
-	//console.log(buffer);
-	//console.log(buffer.toString(16));
-	
-	while(true) {
-		console.log(1);
-		
-		var inter = buffer.toString(16);
-		if(inter.length < 2) {
-			inter = '0' + inter;
-		}
-		
-		result+= inter;
-		
-		if(buffer & 0x80) {
-			buffer = buffer >> 8;
-		} else {
-			break;
-		}
-	}
-	
-	return result;
-}
-
-function rvl(value) {
-	var c = null;
-	var h = value.toString(16);
-	var pos = 0;
-	
-	value = parseInt(h.substr(pos, 2), 16);
-	pos+= 2;
-	
-	//console.log(value);
-	
-	if(value & 0x80) {
-		value &= 0x7F;
-		
-		do {
-			c = parseInt(h.substr(pos, 2), 16);
-			pos+=2;
-			if(!isNaN(c)) {
-				value = (value << 7) + (c & 0x7F);
-			}
-		} while(c && 80);
-	}
-	
-	return value;
-}
-
-/*
-
-console.table([
-	[(0x40).toString(16), rvl(0x40).toString(16)],
-	[(0x7F).toString(16), rvl(0x7F).toString(16)],
-	[(0x8100).toString(16), rvl(0x8100).toString(16)],
-	[(0xC000).toString(16), rvl(0xC000).toString(16)],
-	[(0xFFFF7F).toString(16), rvl(0xFF7F).toString(16)],
-	[(0x818000).toString(16), rvl(0x818000).toString(16)],
-	[(0xC08000).toString(16), rvl(0xC08000).toString(16)],
-	[(0x81808000).toString(16), rvl(0x81808000).toString(16)],
-	[(0xFFFFFF7F).toString(16), rvl(0xFFFFFF7F).toString(16)]
-]);
-
-*/
-
 Aural.Utils.Midi.File = function(buffer) {
 	if(buffer) {
 		this.readBuffer(buffer);
@@ -81,7 +7,6 @@ Aural.Utils.Midi.File = function(buffer) {
 };
 
 Aural.Utils.Midi.File.prototype.buffer = null;
-Aural.Utils.Midi.File.prototype.view = null;
 
 Aural.Utils.Midi.File.prototype.format = null;
 Aural.Utils.Midi.File.prototype.trackNumber = null;
@@ -91,8 +16,10 @@ Aural.Utils.Midi.File.prototype.tracks = null;
 Aural.Utils.Midi.File.prototype.readBuffer = function(buffer) {
 	var offset = 0;
 
-	this.buffer = buffer;
-	this.view = new Uint8Array(buffer);
+	this.buffer = new Aural.Utils.Buffer(buffer);
+
+	console.log(this.buffer.dump());
+
 	this.tracks = [];
 
 	offset = this.readFileHeader(offset);
@@ -105,29 +32,27 @@ Aural.Utils.Midi.File.prototype.readBuffer = function(buffer) {
 };
 
 Aural.Utils.Midi.File.prototype.readTrack = function(offset, trackNumber) {
-	var view = this.view;
+	var buffer = this.buffer;
 	var events = [];
 
-	if(
-		view[offset + 0] !== 0x4D || view[offset + 1] !== 0x54 || view[offset + 2] !== 0x72 || view[offset + 3] !== 0x6B
-	) {
+	if(buffer.readString(offset, 4) !== 'MTrk') {
 		throw('incorrect header track ' + trackNumber);
 	}
 
 	console.log(' * correct header track ' + trackNumber);
 
-	var trackLength = view[offset + 4] * Math.pow(256, 3) + view[offset + 5] * Math.pow(256, 2) + view[offset + 6] * 256 + view[offset + 7];
+	var trackLength = buffer.readByte(offset + 4) * Math.pow(256, 3) + buffer.readByte(offset + 5) * Math.pow(256, 2) + buffer.readByte(offset + 6) * 256 + buffer.readByte(offset + 7);
 
 	console.log(' * track length ' + trackLength);
 
 	offset = offset + 8;
 
-	var trOffset = 0;
+	var startOffset = offset;
 	var cmdBuffer = [];
 	var current = null;
 
-	while(trOffset < trackLength) {
-		current = view[offset + trOffset];
+	while(offset < trackLength + startOffset) {
+		current = buffer.readByte(offset)
 
 		cmdBuffer.push(current);
 
@@ -145,25 +70,25 @@ Aural.Utils.Midi.File.prototype.readTrack = function(offset, trackNumber) {
 						console.log(' * sequence number');
 						break;
 					case 0x01:
-						console.log(' * meta text', this.readString(cmdBuffer, 3, cmdBuffer.length - 1, true));
+						console.log(' * meta text', buffer.readString(offset + 3, cmdBuffer.length - 1, true));
 						break;
 					case 0x02:
-						console.log(' * meta copyright', this.readString(cmdBuffer, 3, cmdBuffer.length - 1, true));
+						console.log(' * meta copyright', buffer.readString(offset + 3, cmdBuffer.length - 1, true));
 						break;
 					case 0x03:
-						console.log(' * meta sequence label', this.readString(cmdBuffer, 3, cmdBuffer.length - 1, true));
+						console.log(' * meta sequence label', buffer.readString(offset + 3, cmdBuffer.length - 1, true));
 						break;
 					case 0x04:
-						console.log(' * meta instrument name', this.readString(cmdBuffer, 3, cmdBuffer.length - 1, true));
+						console.log(' * meta instrument name', buffer.readString(offset + 3, cmdBuffer.length - 1, true));
 						break;
 					case 0x05:
-						console.log(' * meta lyric', this.readString(cmdBuffer, 3, cmdBuffer.length - 1, true));
+						console.log(' * meta lyric', buffer.readString(offset + 3, cmdBuffer.length - 1, true));
 						break;
 					case 0x06:
-						console.log(' * meta marker', this.readString(cmdBuffer, 3, cmdBuffer.length - 1, true));
+						console.log(' * meta marker', buffer.readString(offset + 3, cmdBuffer.length - 1, true));
 						break;
 					case 0x07:
-						console.log(' * meta cue point', this.readString(cmdBuffer, 3, cmdBuffer.length - 1, true));
+						console.log(' * meta cue point', buffer.readString(offset + 3, cmdBuffer.length - 1, true));
 						break;
 					case 0x2F:
 						console.log(' * end of track');
@@ -241,49 +166,43 @@ Aural.Utils.Midi.File.prototype.readTrack = function(offset, trackNumber) {
 			cmdBuffer = [];
 		}
 
-		trOffset++;
+		offset++;
 	}
 
 	this.tracks.push(events);
 
-	return offset + trOffset;
+	return offset;
 };
 
-Aural.Utils.Midi.File.prototype.readString = function(cmdBuffer, start, end, ignoreCRLF) {
-	var string = '';
-	var value = null;
-	for(var i = start, l = cmdBuffer.length; i < l && i < end; i++) {
-		value = cmdBuffer[i];
-
-		if(ignoreCRLF && (value == 0x0A || value == 0x0D)) {
-			continue;
-		}
-
-		string+= String.fromCharCode(value);
-	}
-	return string;
-};
-
+/**
+ * Read the header of the file
+ * @param {integer} offset - Starting byte
+ * @return {integer} Updated offset
+ */
 Aural.Utils.Midi.File.prototype.readFileHeader = function(offset) {
-	var view = this.view;
+	var buffer = this.buffer;
 
 	//check header
 	if(
-		view[offset + 0] !== 0x4D || view[offset + 1] !== 0x54 || view[offset + 2] !== 0x68 || view[offset + 3] !== 0x64 ||
-		view[offset + 4] !== 0x00 || view[offset + 5] !== 0x00 || view[offset + 6] !== 0x00 || view[offset + 7] !== 0x06
+		buffer.readString(offset, 4) !== 'MThd' ||
+		buffer.readByte(offset + 4) !== 0x00 || buffer.readByte(offset + 5) !== 0x00 ||
+		buffer.readByte(offset + 6) !== 0x00 || buffer.readByte(offset + 7) !== 0x06
 	) {
+		console.log('e1');
 		throw('incorrect header file');
 	}
 	
-	this.format = view[offset + 9];
-	this.trackNumber = view[offset + 11];
-	this.fps = view[offset + 13];
+	this.format = buffer.readByte(offset + 9);
+	this.trackNumber = buffer.readByte(offset + 11);
+	this.fps = buffer.readByte(offset + 13);
 
 	if(this.format > 1) {
+		console.log('e2');
 		throw('unsupported format : ' + format);
 	}
 
 	if(this.trackNumber < 1 || (this.format === 0 && this.trackNumber > 1)) {
+		console.log('e3');
 		throw('incorrect track number');
 	}
 
@@ -341,6 +260,11 @@ Aural.Utils.Midi.ControlChangesDictionary = {
 		127: { label : 'poly mode on', shortname : 'poly' }
 	},
 	reverseDictionary : {},
+	/**
+	 * Get the name of a CC by its number
+	 * @param {integer} cc - Identifying number of the control change
+	 * @return {string} Name
+	 */
 	getName : function(cc) {
 		if(!!this.dictionary[cc] && !!this.dictionary[cc]['label']) {
 			return this.dictionary[cc].label;
@@ -348,6 +272,11 @@ Aural.Utils.Midi.ControlChangesDictionary = {
 
 		return null;
 	},
+	/**
+	 * Get the definition of a CC by its number
+	 * @param {integer} cc - Identifying number of the control change
+	 * @return {object} Definition
+	 */
 	get : function(cc) {
 		if(!!this.dictionary[cc]) {
 			return this.dictionary[cc];
@@ -355,6 +284,11 @@ Aural.Utils.Midi.ControlChangesDictionary = {
 
 		return null;
 	},
+	/**
+	 * Get the number of a CC by its name
+	 * @param {string} name - Name of the control change
+	 * @return {integer} Identifying number of the control change
+	 */
 	getCC : function(name) {
 		if(!!this.reverseDictionary[name]) {
 			return this.reverseDictionary[name];
@@ -362,6 +296,10 @@ Aural.Utils.Midi.ControlChangesDictionary = {
 
 		return null;
 	},
+	/**
+	 * Build the reverse dictionary (name => cc number)
+	 * @private
+	 */
 	buildReverseDictionary : function() {
 		var control = null;
 		var reverseDictionary = {};

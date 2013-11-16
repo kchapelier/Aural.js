@@ -137,6 +137,7 @@ Aural.Utils.XHR = {
 							callback(file);
 						}
 					} catch(e) {
+						console.log(e.stack, e);
 						if(callbackError) {
 							callbackError(request);
 						}

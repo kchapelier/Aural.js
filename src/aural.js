@@ -22,6 +22,7 @@ var Aural = {
 		}
 	},
 	Utils : {
+		Buffer : null,
 		XHR : null,
 		Midi : {
 			ControlChangesDictionary : null,
