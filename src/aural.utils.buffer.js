@@ -1,16 +1,13 @@
 "use strict";
 
 //TODO implements write methods
-//TODO make test cases for readVLQ and readInteger with signicantBits != 8
-//TODO make test cases using array as data source
-//TODO try to find a way to get the value of a bit that would not depend on toString (too slow)
 
 Aural.Utils.Buffer = function(buffer) {
 	if(typeof buffer == 'string') {
 		this.view = new Uint8Array(buffer.length);
 		
 		for(var i = 0, l = buffer.length; i < l; i++) {
-			this.view[i] = buffer.charCodeAt(i);
+			this.view[i] = buffer.charCodeAt(i) % 256;
 		}
 	} else if(Object.prototype.toString.call(buffer) == '[object Array]') {
 		this.view = new Uint8Array(buffer.length);
@@ -66,25 +63,20 @@ Aural.Utils.Buffer.prototype.writeVLQ = function(start, value) {
  * @return {integer} Value
  */
 Aural.Utils.Buffer.prototype.readVLQ = function(start) {
+	var value = this.readByte(start);
 	var c = null;
-	var h = value.toString(16);
-	var pos = 0;
-	
-	value = parseInt(h.substr(pos, 2), 16);
-	pos+= 2;
-	
-	//console.log(value);
+	var pos = start;
 	
 	if(value & 0x80) {
 		value &= 0x7F;
 		
 		do {
-			c = parseInt(h.substr(pos, 2), 16);
-			pos+=2;
+			pos++;
+			c = this.readByte(pos);
 			if(!isNaN(c)) {
 				value = (value << 7) + (c & 0x7F);
 			}
-		} while(c && 80);
+		} while(c & 0x80);
 	}
 	
 	return value;
@@ -96,17 +88,37 @@ Aural.Utils.Buffer.prototype.readVLQ = function(start) {
  * @return {integer} Value of the bit (0 or 1)
  */
 Aural.Utils.Buffer.prototype.readBit = function(bit) {
-	var value = null;
 	var byte = Math.floor(bit / 8);
-	var bitPos = bit % 8;
-	var binary = this.view[byte].toString(2);
-	bitPos+= binary.length - 8;
+	var bitMask = Math.pow(2, 7 - (bit % 8));
 	
-	if(this.view.length > byte) {
-		value = !!binary[bitPos] ? parseInt(binary[bitPos]) : 0;
+	return (this.view[byte] & bitMask ? 1 : 0);
+};
+
+/**
+ * Set the value of a given bit
+ * @param (integer) bit - Bit to write
+ * @param (integer) value - Value
+ */
+Aural.Utils.Buffer.prototype.writeBit = function(bit, value) {
+	var byte = Math.floor(bit / 8);
+	
+	if(value > 0) {
+		var bitMask = Math.pow(2, 7 - (bit % 8));
+		this.view[byte] |= bitMask;
+	} else {
+		var bitMask = 0xFF - Math.pow(2, 7 - (bit % 8));
+		this.view[byte] &= bitMask;
 	}
-	
-	return value;
+};
+
+/**
+ * Toggle the value of a given bit
+ * @param (integer) bit - Bit to toggle
+ */
+Aural.Utils.Buffer.prototype.toggleBit = function(bit) {
+	var byte = Math.floor(bit / 8);
+	var bitMask = Math.pow(2, 7 - (bit % 8));
+	this.view[byte] ^= bitMask;
 };
 
 /**
@@ -122,6 +134,15 @@ Aural.Utils.Buffer.prototype.readByte = function(byte) {
 	}
 
 	return value;
+};
+
+/**
+ * Set the value of a given byte
+ * @param {integer} byte - Byte to write
+ * @param {integer} value - Value
+ */
+Aural.Utils.Buffer.prototype.writeByte = function(byte, value) {
+	this.view[byte] = value % 256;
 };
 
 /**
@@ -148,7 +169,7 @@ Aural.Utils.Buffer.prototype.readUint16 = function(byte) {
  * @return {integer} Unsigned 24 bit integer (0 - 16777215)
  */
 Aural.Utils.Buffer.prototype.readUint24 = function(byte) {
-	return this.readInteger(byte, 2, 8);
+	return this.readInteger(byte, 3, 8);
 };
 
 /**
@@ -171,10 +192,11 @@ Aural.Utils.Buffer.prototype.readUint32 = function(byte) {
 Aural.Utils.Buffer.prototype.readInteger = function(start, length, significantBits, lsbFirst) {
 	var value = 0;
 	significantBits = significantBits || 8;
-	
+	var bitMask = (Math.pow(2, significantBits) - 1);
+	var coeff = null;
 	for(var i = 0, c = start, l = start + length; c < l; i++, c++) {
-		var coeff = (lsbFirst ? Math.pow(2, significantBits * i) : Math.pow(2, significantBits * (length - i - 1)));
-		value += this.readByte(c) * coeff;
+		coeff = (lsbFirst ? Math.pow(2, significantBits * i) : Math.pow(2, significantBits * (length - i - 1)));
+		value += (this.readByte(c) & bitMask) * coeff;
 	}
 	
 	return value;
@@ -206,6 +228,19 @@ Aural.Utils.Buffer.prototype.readString = function(start, length, ignoreCRLF) {
 };
 
 /**
+ * Write a string in the buffer
+ * @param {integer} start - Starting byte
+ * @param {string} value - String
+ */
+Aural.Utils.Buffer.prototype.writeString = function(start, value) {
+	var end = start + value.length;
+	
+	for(var i = 0; i < value.length; i++) {
+		this.view[start + i] = value.charCodeAt(i) % 256;
+	}
+};
+
+/**
  * Get the length of the buffer
  * @return {integer} Length
  */
@@ -215,7 +250,7 @@ Aural.Utils.Buffer.prototype.getLength = function() {
 
 /**
  * Return the whole buffer as a string
- * @return {string} uffer as a string
+ * @return {string} Buffer as a string
  */
 Aural.Utils.Buffer.prototype.toString = function() {
 	return this.readString(0, this.view.length, false);
