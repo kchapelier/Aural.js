@@ -155,6 +155,36 @@ test('readVLQ', function() {
 	equal(buffer.readVLQ(0), 0xFFFFFFF);
 });
 
+test('writeVLQ', function() {
+	var buffer = new Aural.Utils.Buffer('abcd');
+
+	buffer.writeVLQ(3, 0x40);
+	equal(buffer.readVLQ(3), 0x40);
+	equal(buffer.readByte(3), 0x40);
+
+	buffer.writeVLQ(3, 0x7F);
+	equal(buffer.readVLQ(3), 0x7F);
+	equal(buffer.readByte(3), 0x7F);
+
+	buffer.writeVLQ(1, 0x3FFF);
+	equal(buffer.readVLQ(1), 0x3FFF);
+	equal(buffer.readByte(1), 0xFF);
+	equal(buffer.readByte(2), 0x7F);
+
+	buffer.writeVLQ(0, 0x4000);
+	equal(buffer.readVLQ(0), 0x4000);
+	equal(buffer.readByte(0), 0x81);
+	equal(buffer.readByte(1), 0x80);
+	equal(buffer.readByte(2), 0x00);
+
+	buffer.writeVLQ(0, 0xFFFFFFF);
+	equal(buffer.readVLQ(0), 0xFFFFFFF);
+	equal(buffer.readByte(0), 0xFF);
+	equal(buffer.readByte(1), 0xFF);
+	equal(buffer.readByte(2), 0xFF);
+	equal(buffer.readByte(3), 0x7F);
+});
+
 test('constructor(array)', function() {
 	var buffer = new Aural.Utils.Buffer([255, 254, 253, 252]);
 	

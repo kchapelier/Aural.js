@@ -22,40 +22,25 @@ Aural.Utils.Buffer = function(buffer) {
 
 Aural.Utils.Buffer.prototype.view = null;
 
-/*
+/**
+ * Write a value into the buffer as a variable length quantity
+ * @param {integer} start - Starting byte
+ * @param {integer} value - Value
+ */
 Aural.Utils.Buffer.prototype.writeVLQ = function(start, value) {
-	var buffer = value & 0x7F;
+	var pos = start;
+	var bytes = [];
 	
-	while((value >>= 7)) {
-		buffer <<= 8;
-		buffer |= ((value & 0x7F) | 0x80);
+	bytes.push(value & 0x7F);
+
+	while (value >>= 7) {
+		bytes.push((value & 0x7F) | 0x80);
 	}
-	
-	var result = '';
-	
-	//console.log(buffer);
-	//console.log(buffer.toString(16));
-	
-	while(true) {
-		console.log(1);
-		
-		var inter = buffer.toString(16);
-		if(inter.length < 2) {
-			inter = '0' + inter;
-		}
-		
-		result+= inter;
-		
-		if(buffer & 0x80) {
-			buffer = buffer >> 8;
-		} else {
-			break;
-		}
+
+	for(var i = 0, l = bytes.length; i < l; i++) {
+		this.writeByte(start + l - i - 1, bytes[i]);
 	}
-	
-	return result;
 }
-*/
 
 /**
  * Read a value encoded as a variable length quantity
