@@ -28,6 +28,9 @@ var Aural = {
 			ControlChangesDictionary : null,
 			File : null
 		},
+		MML : {
+			File : null
+		},
 		Support : null,
 		Sfz : {
 			Region : null,
