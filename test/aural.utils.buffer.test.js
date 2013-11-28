@@ -86,6 +86,12 @@ test('readString', function() {
 	equal(buffer.readString(1, 3), 'bcd');
 });
 
+test('writeString', function() {
+	var buffer = new Aural.Utils.Buffer('abcd');
+	buffer.writeString(1, 'xy');
+	equal(buffer.toString(), 'axyd');
+});
+
 test('readUint', function() {
 	var buffer = new Aural.Utils.Buffer('abcdefgh');
 
@@ -104,6 +110,24 @@ test('readUint', function() {
 	equal(buffer.readUint32(0), 0x61626364);
 });
 
+test('writeUint', function() {
+	var buffer = new Aural.Utils.Buffer('abcdefgh');
+
+	buffer.writeUint8(3, 0x05);
+	equal(buffer.readUint8(3), 0x05);
+
+	buffer.writeUint16(0, 0xFFFF);
+	equal(buffer.readUint16(0), 0xFFFF);
+
+	buffer.writeUint24(1, 0xFF00FF);
+	equal(buffer.readUint24(1), 0xFF00FF);
+
+	buffer.writeUint32(0, 0x62657850);
+	equal(buffer.readUint32(0), 0x62657850);
+
+	equal(buffer.readString(0, 4), 'bexP');
+});
+
 test('readInteger', function() {
 	var buffer = new Aural.Utils.Buffer('abcd');
 	
@@ -114,10 +138,22 @@ test('readInteger', function() {
 	equal(buffer.readInteger(0, 4, 8, true), 0x64636261);
 });
 
-test('writeString', function() {
+test('writeInteger', function() {
 	var buffer = new Aural.Utils.Buffer('abcd');
-	buffer.writeString(1, 'xy');
-	equal(buffer.toString(), 'axyd');
+	
+	buffer.writeInteger(0, 0, 4);
+	equal(buffer.readUint32(0), 0);
+	
+	buffer.writeInteger(0, 0xF9, 2, 4);
+	equal(buffer.readInteger(0, 2), 0x0F09);
+	equal(buffer.readInteger(0, 2, 4), 0xF9);
+
+	buffer.writeInteger(0, 0xF9, 2, 4, true);
+	equal(buffer.readInteger(0, 2), 0x090F);
+	equal(buffer.readInteger(0, 2, 4, true), 0xF9);
+
+	buffer.writeInteger(1, 0x7F, 3, 7);
+	equal(buffer.readInteger(1, 3, 7), 0x7F);
 });
 
 test('readVLQ', function() {

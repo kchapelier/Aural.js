@@ -13,7 +13,7 @@ Aural.Utils.Buffer = function(buffer) {
 		this.view = new Uint8Array(buffer.length);
 		
 		for(var i = 0, l = buffer.length; i < l; i++) {
-			this.view[i] = buffer[i];
+			this.view[i] = buffer[i] % 256;
 		}
 	} else {
 		this.view = new Uint8Array(buffer);
@@ -140,12 +140,30 @@ Aural.Utils.Buffer.prototype.readUint8 = function(byte) {
 };
 
 /**
+ * Write the value of an unsigned 8 bit integer (alias of writeByte)
+ * @param {integer} byte - Byte to write
+ * @param {integer} value - Value
+ */
+Aural.Utils.Buffer.prototype.writeUint8 = function(byte, value) {
+	this.writeByte(byte, value);
+};
+
+/**
  * Read the value of two bytes as an unsigned 16 bit integer
  * @param {integer} byte - Starting byte
  * @return {integer} Unsigned 16 bit integer (0 - 65535)
  */
 Aural.Utils.Buffer.prototype.readUint16 = function(byte) {
 	return this.readInteger(byte, 2, 8);
+};
+
+/**
+ * Write the value of an unsigned 16 bit integer
+ * @param {integer} byte - Byte to write
+ * @param {integer} value - Value
+ */
+Aural.Utils.Buffer.prototype.writeUint16 = function(byte, value) {
+	return this.writeInteger(byte, value, 2, 8);
 };
 
 /**
@@ -158,6 +176,15 @@ Aural.Utils.Buffer.prototype.readUint24 = function(byte) {
 };
 
 /**
+ * Write the value of an unsigned 24 bit integer
+ * @param {integer} byte - Byte to write
+ * @param {integer} value - Value
+ */
+Aural.Utils.Buffer.prototype.writeUint24 = function(byte, value) {
+	return this.writeInteger(byte, value, 3, 8);
+};
+
+/**
  * Read the value of four bytes as an unsigned 32 bit integer
  * @param {integer} byte - Starting byte
  * @return {integer} Unsigned 32 bit integer (0 - 4294967295)
@@ -167,8 +194,17 @@ Aural.Utils.Buffer.prototype.readUint32 = function(byte) {
 };
 
 /**
+ * Write the value of an unsigned 32 bit integer
+ * @param {integer} byte - Byte to write
+ * @param {integer} value - Value
+ */
+Aural.Utils.Buffer.prototype.writeUint32 = function(byte, value) {
+	return this.writeInteger(byte, value, 4, 8);
+};
+
+/**
  * Read a specificly formated integer
- * @param {integer} byte - Starting byte
+ * @param {integer} start - Starting byte
  * @param {integer} length - Number of bytes to read
  * @param {integer} significantBits - Number of bit pers bytes to take into account (defaut = 8)
  * @param {boolean} lsbFirst - Whether the least significant bytes are first (default = false)
@@ -185,6 +221,27 @@ Aural.Utils.Buffer.prototype.readInteger = function(start, length, significantBi
 	}
 	
 	return value;
+};
+
+/**
+ * Write a specificly formated integer
+ * @param {integer} start - Starting byte
+ * @param {integer} value - Value
+ * @param {integer} length - Number of bytes to read
+ * @param {integer} significantBits - Number of bit pers bytes to take into account (defaut = 8)
+ * @param {boolean} lsbFirst - Whether the least significant bytes are first (default = false)
+ */
+Aural.Utils.Buffer.prototype.writeInteger = function(start, value, length, significantBits, lsbFirst) {
+	significantBits = significantBits || 8;
+	var bitMask = (Math.pow(2, significantBits) - 1);
+	
+	for(var i = 0; i < length; i++) {
+		//console.log((value & bitMask).toString(2));
+		
+		this.writeByte(lsbFirst ? start + i : start + length - i - 1, value & bitMask);
+		
+		value = value >> significantBits;
+	}
 };
 
 /**
