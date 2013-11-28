@@ -1,7 +1,5 @@
 "use strict";
 
-//TODO implements write methods
-
 Aural.Utils.Buffer = function(buffer) {
 	if(typeof buffer == 'string') {
 		this.view = new Uint8Array(buffer.length);
@@ -236,8 +234,6 @@ Aural.Utils.Buffer.prototype.writeInteger = function(start, value, length, signi
 	var bitMask = (Math.pow(2, significantBits) - 1);
 	
 	for(var i = 0; i < length; i++) {
-		//console.log((value & bitMask).toString(2));
-		
 		this.writeByte(lsbFirst ? start + i : start + length - i - 1, value & bitMask);
 		
 		value = value >> significantBits;

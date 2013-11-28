@@ -21,9 +21,10 @@ Aural.Music.IntervalList = {
 	 * @return {Aural.Music.Interval} Interval
 	 */
 	match : function(note1, note2) {
-		var deltaCents = Math.abs((note1.cents - note2.cents) + (note1.midi - note2.midi) * 100);
+		var deltaCents = (note1.cents - note2.cents) + (note1.midi - note2.midi) * 100;
+		var identifier = this.getIdentifier(deltaCents);
 
-		return !!this.intervals[deltaCents] ? this.intervals[deltaCents] : null;
+		return !!this.intervals[identifier] ? this.intervals[identifier] : null;
 	},
 	/**
 	 * Return the interval  matching a given name or cent amount
@@ -37,7 +38,7 @@ Aural.Music.IntervalList = {
 			case 'float':
 			case 'integer':
 			case 'number':
-				identifier = Math.abs(identifier);
+				identifier = this.getIdentifier(identifier);
 				interval = !!this.intervals[identifier] ? this.intervals[identifier] : null;
 				break;
 			case 'string':
@@ -51,5 +52,13 @@ Aural.Music.IntervalList = {
 		}
 
 		return interval;
-	}
+	},
+	/**
+	 * Return an identifier to use with/against the list from a number of cents
+	 * @param {float} cents
+	 * @return {string} Identifier
+	 */
+	getIdentifier : function(cents) {
+		return (Math.floor(Math.abs(cents) * 1000) / 1000).toString(10);
+	}	
 };
