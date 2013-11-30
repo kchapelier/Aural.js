@@ -245,7 +245,7 @@ test('note set cents', function() {
 
 test('note copy', function() {
 	var note1 = Aural.Music.Note.createFromLabel('C', 2, 100);
-	note2 = note1.copy();
+	var note2 = note1.copy();
 
 	equal(note1.cents, note2.cents, 'copied note should have the same cents');
 	equal(note1.label, note2.label, 'copied note should have the same label');

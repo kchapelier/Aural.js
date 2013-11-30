@@ -1,5 +1,10 @@
 "use strict";
 
+//TODO methods to read and write C string, pascal string and IEEE floating-point data might become useful
+//TODO being able to extend the buffer length as we write inside it will shortly become necessary
+//TODO make it possible to return the last accessed byte (should there be a distinction between read or write access ?)
+//TODO making it able to write in a stream fashiongm
+
 Aural.Utils.Buffer = function(buffer) {
 	if(typeof buffer == 'string') {
 		this.view = new Uint8Array(buffer.length);
@@ -38,7 +43,7 @@ Aural.Utils.Buffer.prototype.writeVLQ = function(start, value) {
 	for(var i = 0, l = bytes.length; i < l; i++) {
 		this.writeByte(start + l - i - 1, bytes[i]);
 	}
-}
+};
 
 /**
  * Read a value encoded as a variable length quantity

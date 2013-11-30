@@ -6,7 +6,7 @@ test('chord power chord', function() {
 	equal(chord.key, 'C', 'default key should be C');
 	equal(chord.octave, 0, 'default octave should be 0');
 	equal(chord.name, 'power chord', 'name should match with request');
-	equal(chord.shortname, '5', 'power chord shortname should be 5');
+	equal(chord.shortnames.indexOf('5') > -1, true, 'power chord shortname should be 5');
 	equal(chord.intervals.length, 2, 'power chord should have 2 intervals');
 
 	equal(chord.getKeyOffset(), 12, 'power chord should have a key offset of 12');
@@ -20,7 +20,8 @@ test('chord major A implied A0', function() {
 	equal(chord.key, 'A', 'A major key should be A');
 	equal(chord.octave, 0, 'default octave should be 0');
 	equal(chord.name, 'major', 'name should match with request');
-	equal(chord.shortname, '', 'A major shortname should be (empty)');
+	equal(chord.shortnames.indexOf('') > -1, true, 'A major shortname should be (empty)');
+	equal(chord.shortnames.indexOf('M') > -1, true, 'A major shortname should be M');
 	equal(chord.intervals.length, 3, 'A major should have 3 intervals');
 
 	equal(chord.getKeyOffset(), 21, 'A major should have a key offset of 21');
@@ -34,7 +35,7 @@ test('chord minor Bb2', function() {
 	equal(chord.key, 'A#', 'Bb minor key should be A');
 	equal(chord.octave, 2, 'octave should be 2');
 	equal(chord.name, 'minor', 'name should match with request');
-	equal(chord.shortname, 'm', 'Bb minor shortname should be m');
+	equal(chord.shortnames.indexOf('m') > -1, true, 'Bb minor shortname should be m');
 	equal(chord.intervals.length, 3, 'Bb minor should have 3 intervals');
 
 	equal(chord.getKeyOffset(), 46, 'Bb minor should have a key offset of 46');
@@ -48,7 +49,8 @@ test('chord dominant seventh C-1', function() {
 	equal(chord.key, 'C', 'C dominant seventh key should be C');
 	equal(chord.octave, -1, 'octave should be -1');
 	equal(chord.name, 'dominant seventh', 'name should match with request');
-	equal(chord.shortname, '7', 'C dominant seventh shortname should be 7');
+	equal(chord.shortnames.indexOf('7') > -1, true, 'C dominant seventh shortname should be 7');
+	equal(chord.shortnames.indexOf('dom7') > -1, true, 'C dominant seventh shortname should be 7');
 	equal(chord.intervals.length, 4, 'C dominant seventh should have 4 intervals');
 
 	equal(chord.getKeyOffset(), 0, 'C dominant seventh should have a key offset of 0');
@@ -62,7 +64,7 @@ test('chord augmented dominant ninth D#3', function() {
 	equal(chord.key, 'D#', 'D# augmented dominant ninth key should be D#');
 	equal(chord.octave, 3, 'octave should be 3');
 	equal(chord.name, 'augmented dominant ninth', 'name should match with request');
-	equal(chord.shortname, 'aug9', 'D# augmented dominant ninth shortname should be aug9');
+	equal(chord.shortnames.indexOf('aug9') > -1, true, 'D# augmented dominant ninth shortname should be aug9');
 	equal(chord.intervals.length, 5, 'D# augmented dominant ninth should have 5 intervals');
 
 	equal(chord.getKeyOffset(), 51, 'D# augmented dominant ninth should have a key offset of 51');

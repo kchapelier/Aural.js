@@ -11,7 +11,8 @@ var Aural = {
 		Chord : null,
 		ChordList : null,
 		Interval : null,
-		IntervalList : null
+		IntervalList : null,
+		Phrase : null
 	},
 	Sound : {
 		BufferMap : null,

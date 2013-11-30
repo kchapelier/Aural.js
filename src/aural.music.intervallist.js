@@ -32,7 +32,7 @@ Aural.Music.IntervalList = {
 	 * @return {Aural.Music.Interval} Interval
 	 */
 	getInterval : function(identifier) {
-		var interval = null;
+		var interval;
 
 		switch(typeof identifier) {
 			case 'float':
@@ -60,5 +60,5 @@ Aural.Music.IntervalList = {
 	 */
 	getIdentifier : function(cents) {
 		return (Math.floor(Math.abs(cents) * 1000) / 1000).toString(10);
-	}	
+	}
 };

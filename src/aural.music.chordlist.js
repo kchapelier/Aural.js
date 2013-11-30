@@ -2,8 +2,8 @@
 
 Aural.Music.ChordList = {
 	chords : [],
-	addChord : function(intervals, shortname, name) {
-		this.chords.push(new Aural.Music.Chord(intervals, shortname, name));
+	addChord : function(intervals, shortnames, name) {
+		this.chords.push(new Aural.Music.Chord(intervals, shortnames, name));
 	},
 	/**
 	 * Normalize a set of notes to intervals
@@ -84,7 +84,7 @@ Aural.Music.ChordList = {
 		}
 
 		for(var i = 0, l = this.chords.length; i < l; i++) {
-			if(this.chords[i].name == name || this.chords[i].shortname == name) {
+			if(this.chords[i].name == name || this.chords[i].shortnames.indexOf(name) > -1) {
 				return this.chords[i].copy(key, octave);
 			}
 		}

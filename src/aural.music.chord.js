@@ -1,15 +1,15 @@
 "use strict";
 
-Aural.Music.Chord = function(intervals, shortname, name, key, octave) {
+Aural.Music.Chord = function(intervals, shortnames, name, key, octave) {
 	this.name = name;
-	this.shortname = shortname;
+	this.shortnames = [].concat(shortnames);
 	this.intervals = intervals;
 	this.setKey(key || 'C', octave);
 };
 
 Aural.Music.Chord.prototype.intervals = null;
 Aural.Music.Chord.prototype.name = null;
-Aural.Music.Chord.prototype.shortname = null;
+Aural.Music.Chord.prototype.shortnames = null;
 Aural.Music.Chord.prototype.key = null;
 Aural.Music.Chord.prototype.octave = null;
 
@@ -136,5 +136,5 @@ Aural.Music.Chord.prototype.getKeyOffset = function() {
  * @returns {Aural.Music.Scale} Keyed chord
  */
 Aural.Music.Chord.prototype.copy = function(key, octave) {
-	return new Aural.Music.Chord(this.intervals, this.shortname, this.name, key, octave);
+	return new Aural.Music.Chord(this.intervals, this.shortnames, this.name, key, octave);
 };
