@@ -168,3 +168,17 @@ test('chord get interval', function() {
 	equal(intervals[2].cents, 600, '3rd interval of a diminished seventh chord should be of 600 cents');
 	equal(intervals[3].cents, 900, '4th interval of a diminished seventh chord should be of 900 cents');
 });
+
+test('chord get by alternative signs', function() {
+	var chord = Aural.Music.ChordList.getChord('B2Δ7');
+
+	equal(chord.name, 'major seventh', 'name should match with request');
+
+	chord = Aural.Music.ChordList.getChord('Cø9');
+
+	equal(chord.name, 'half diminished ninth', 'name should match with request');
+
+	chord = Aural.Music.ChordList.getChord('G#°7');
+
+	equal(chord.name, 'diminished seventh', 'name should match with request');
+});

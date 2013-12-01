@@ -2,6 +2,7 @@
 
 Aural.Music.ChordList = {
 	chords : [],
+	shortnameTranslations : {},
 	addChord : function(intervals, shortnames, name) {
 		this.chords.push(new Aural.Music.Chord(intervals, shortnames, name));
 	},
@@ -83,13 +84,22 @@ Aural.Music.ChordList = {
 			name = parsed[2];
 		}
 
+		var shortname = name;
+
+		for(var from in this.shortnameTranslations) {
+			shortname = shortname.replace(from, this.shortnameTranslations[from]);
+		}
+
 		for(var i = 0, l = this.chords.length; i < l; i++) {
-			if(this.chords[i].name == name || this.chords[i].shortnames.indexOf(name) > -1) {
+			if(this.chords[i].name == name || this.chords[i].shortnames.indexOf(shortname) > -1) {
 				return this.chords[i].copy(key, octave);
 			}
 		}
 
 		return null;
+	},
+	addDirectShortnameTranslation : function(from, to) {
+		this.shortnameTranslations[from] = to;
 	},
 	parseName : function(name) {
 		var regex = /^([CDEFGAB][#b]?-?[0-9]*) *(.*)/;
