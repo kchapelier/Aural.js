@@ -66,3 +66,16 @@ test('parse ignore region without sample', function() {
 	equal(sfzFile.regions[0].pitchKeyCenter, 49);
 	equal(sfzFile.regions[1].pitchKeyCenter, 51);
 });
+
+test('parse sample with spaces', function() {
+	var sfz = '<region>sample=/files/My new sample1.wav\r\n' +
+	'pitch_keycenter=20\r\n' +
+	'<region>sample=/files/My new sample2.wav pitch_keycenter=21\r\n';
+
+	var sfzFile = Aural.Utils.Sfz.File.loadFromString(sfz);
+
+	equal(sfzFile.regions.length, 2, 'there should be 2 regions loaded');
+
+	equal(sfzFile.regions[0].sample, '/files/My new sample1.wav');
+	equal(sfzFile.regions[1].sample, '/files/My new sample2.wav');
+});
