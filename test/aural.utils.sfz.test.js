@@ -1,5 +1,6 @@
 module("Aural.Utils.Sfz");
 
+
 test('parse most basic', function() {
 	var sfz = '\r\n//some file\r\n' + 
 	'<region>\r\n' + 
@@ -78,4 +79,14 @@ test('parse sample with spaces', function() {
 
 	equal(sfzFile.regions[0].sample, '/files/My new sample1.wav');
 	equal(sfzFile.regions[1].sample, '/files/My new sample2.wav');
+});
+
+test('parse faulty string', function() {
+	var sfz = '<region>      sample=thing a magick     === ok then =//=' +
+	'<region>==  = ';
+
+	var sfzFile = Aural.Utils.Sfz.File.loadFromString(sfz);
+
+	equal(sfzFile.regions.length, 1, 'there should be 1 region loaded');
+	equal(sfzFile.regions[0].sample, 'thing a magick');
 });

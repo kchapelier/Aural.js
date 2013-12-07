@@ -214,11 +214,12 @@ Aural.Utils.Sfz.File.prototype.parse = function(data){
 			for(var i2 = 0, l2 = lines.length; i2 < l2; i2++) {
 				var line = lines[i2];
 				line = line.split('//')[0];
-
+			
 				var option = null;
-				var regex = /([a-zA-Z-_]*)=([^ ]*)/g;
+				var regex = /([a-zA-Z-_]*)=([^=]*)(?![a-zA-Z-_]*=)/g;
+
 				while((option = regex.exec(line)) !== null) {
-					options[option[1]] = option[2];
+					options[option[1].trim()] = option[2].trim();
 				}
 			}
 
