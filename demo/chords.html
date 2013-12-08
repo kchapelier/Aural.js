@@ -118,7 +118,7 @@
 						var chords = Aural.Music.ChordList.fits(keys);
 
 						for(var i = 0, l = chords.length; i < l; i++) {
-							showLog(chords[i].key + chords[i].octave + ' ' + chords[i].name + ' (' + chords[i].key + chords[i].shortname + ')');
+							showLog(chords[i].key + chords[i].octave + ' ' + chords[i].name + ' (' + chords[i].key + chords[i].shortnames[0] + ')');
 						}
 					} else {
 						showLog('Select at leat 2 keys.');
