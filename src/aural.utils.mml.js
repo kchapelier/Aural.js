@@ -1,5 +1,8 @@
 "use strict";
 
+//TODO length on note and pause
+//TODO length extension ^
+
 Aural.Utils.MML.File = function(mml) {
 	this.voices = [];
 	

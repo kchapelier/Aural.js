@@ -100,30 +100,47 @@ Aural.Utils.XHR = {
 	/**
 	 * Execute one request
 	 * @param {string} url - Url
-	 * @param {string} type - Type expected (audio for an AudioBuffer, array for an ArrayBuffer, sfz for a soundfont file, midi for a midi file)
+	 * @param {string} type - Type expected (audio for an AudioBuffer, array for an ArrayBuffer, sfz for a soundfont file, midi for a midi file, mml for a mml file)
 	 * @param {function} callback - Callback on complete
 	 * @param {function} callbackError - Callback on failure
 	 */
 	load : function(url, type, callback, callbackError) {
 		var request = new XMLHttpRequest();
 		request.open('GET', url, true);
-		
+
 		switch(type) {
 			case 'sfz':
 				request.onload = function() {
 					var file = Aural.Utils.Sfz.File.loadFromString(request.response);
-					
+
 					if(callback) {
 						callback(file);
 					}
 				};
-				
+
 				request.onerror = function() {
 					if(callbackError) {
 						callbackError(request);
 					}
 				};
-				
+
+				request.send();
+				break;
+			case 'mml':
+				request.onload = function() {
+					var file = new Aural.Utils.MML.File(request.response);
+
+					if(callback) {
+						callback(file);
+					}
+				};
+
+				request.onerror = function() {
+					if(callbackError) {
+						callbackError(request);
+					}
+				};
+
 				request.send();
 				break;
 			case 'midi':
