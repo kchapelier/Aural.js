@@ -27,7 +27,7 @@ Aural.Music.Phrase.prototype.setName = function(name) {
 
 /**
  * Set the beats per minute of the phrase
- * @param (float) bpm - Beats per minute
+ * @param {Number} bpm - Beats per minute
  */
 Aural.Music.Phrase.prototype.setBpm = function(bpm) {
 	this.bpm = bpm;
@@ -35,7 +35,7 @@ Aural.Music.Phrase.prototype.setBpm = function(bpm) {
 
 /**
  * Set the duration of the phrase
- * @param {float} duration - Duration
+ * @param {Number} duration - Duration
  */
 Aural.Music.Phrase.prototype.setDuration = function(duration) {
 	this.duration = duration;
@@ -75,24 +75,26 @@ Aural.Music.Phrase.prototype.removeEvent = function(event) {
 };
 
 Aural.Music.Phrase.prototype.add = function(addPhrase) {
+	var i, l;
+
 	this.setDuration(Math.max(this.duration, addPhrase.duration));
 	
-	for(var i = 0, l = addPhrase.noteEvents.length; i < l; i++) {
+	for(i = 0, l = addPhrase.noteEvents.length; i < l; i++) {
 		this.noteEvents.push(addPhrase.noteEvents[i].copy());
 	}
 	
-	for(var i = 0, l = addPhrase.textEvents.length; i < l; i++) {
+	for(i = 0, l = addPhrase.textEvents.length; i < l; i++) {
 		this.textEvents.push(addPhrase.textEvents[i].copy());
 	}
 };
 
 /**
  * Add a note event
- * @param {integer} midi - Midi value
- * @param {float} start - Start
- * @param {float} duration - Duration
- * @param {object} options - Additional options (velocity, pan and detune)
- * @return {NoteEvent} Event
+ * @param {Number} midi - Midi value
+ * @param {Number} start - Start
+ * @param {Number} duration - Duration
+ * @param {Object} [options] - Additional options (velocity, pan and detune)
+ * @return {Aural.Music.Phrase.NoteEvent} Event
  */
 Aural.Music.Phrase.prototype.addNoteEvent = function(midi, start, duration, options) {
 	options = options || {};
@@ -112,10 +114,10 @@ Aural.Music.Phrase.prototype.addNoteEvent = function(midi, start, duration, opti
 /**
  * Add a text event
  * @param {string} text - Text
- * @param {float} start - Start
- * @param {float} duration - Duration
- * @param {object} options - Additional options (type)
- * @return {TextEvent} Event
+ * @param {Number} start - Start
+ * @param {Number} duration - Duration
+ * @param {Object} [options] - Additional options (type)
+ * @return {Aural.Music.Phrase.TextEvent} Event
  */
 Aural.Music.Phrase.prototype.addTextEvent = function(text, start, duration, options) {
 	options = options || {};
@@ -134,9 +136,11 @@ Aural.Music.Phrase.prototype.addTextEvent = function(text, start, duration, opti
 
 /**
  * Restrict all the events to the given duration (or the duration of the phrase)
- * @param {float} duration - Duration
+ * @param {Number} duration - Duration
  */
 Aural.Music.Phrase.prototype.restrictEvents = function(duration) {
+	var i, l;
+
 	if(duration) {
 		this.setDuration(duration);
 	}
@@ -146,7 +150,7 @@ Aural.Music.Phrase.prototype.restrictEvents = function(duration) {
 	var event = null;
 	var events = [];
 	
-	for(var i = 0, l = this.noteEvents.length; i < l; i++) {
+	for(i = 0, l = this.noteEvents.length; i < l; i++) {
 		event = this.noteEvents[i];
 		
 		if(event.start < duration) {
@@ -159,7 +163,7 @@ Aural.Music.Phrase.prototype.restrictEvents = function(duration) {
 	
 	events = [];
 	
-	for(var i = 0, l = this.textEvents.length; i < l; i++) {
+	for(i = 0, l = this.textEvents.length; i < l; i++) {
 		event = this.textEvents[i];
 		
 		if(event.start < duration) {
@@ -216,24 +220,26 @@ Aural.Music.Phrase.prototype.getMatchingScales = function(exactOnly) {
 
 /**
  * Return a subset of the phrase
- * @param {integer} start - Start
- * @param {integer} length - Length
+ * @param {Number} start - Start
+ * @param {Number} length - Length
  * @param {boolean} includeNoteEvents - Whether to include the note events
  * @param {boolean} includeTextEvents - Whether to include the text events
- * @return {Phrase} Subset of the phrase
+ * @return {Aural.Music.Phrase} Subset of the phrase
  */
 Aural.Music.Phrase.prototype.subPhrase = function(start, length, includeNoteEvents, includeTextEvents) {
+	var i, l;
+
 	var subPhrase = new Aural.Music.Phrase();
 	
 	var events = this.getEvents(start, length, includeNoteEvents, includeTextEvents);
 	var event = null;
 	
-	for(var i = 0, l = events.noteEvents.length; i < l; i++) {
+	for(i = 0, l = events.noteEvents.length; i < l; i++) {
 		event = events.noteEvents[i];
 		subPhrase.addNoteEvent(event.midi, event.start - start, event.duration, { 'detune' : event.detune, 'velocity' : event.velocity, 'pan' : event.pan });
 	}
 	
-	for(var i = 0, l = events.textEvents.length; i < l; i++) {
+	for(i = 0, l = events.textEvents.length; i < l; i++) {
 		event = events.textEvents[i];
 		subPhrase.addTextEvent(event.text, event.start - start, event.duration, { 'type' : event.type });
 	}
@@ -243,13 +249,15 @@ Aural.Music.Phrase.prototype.subPhrase = function(start, length, includeNoteEven
 
 /**
  * Return events from the phrase
- * @param {integer} start - Start of period to search in
- * @param {integer} length - Length of the period to search in
+ * @param {Number} start - Start of period to search in
+ * @param {Number} length - Length of the period to search in
  * @param {boolean} includeNoteEvents - Whether to include the note events
  * @param {boolean} includeTextEvents - Whether to include the text events
- * @return {object} Object with the matchings noteEvents and textEvents
+ * @return {Object} Object with the matchings noteEvents and textEvents
  */
 Aural.Music.Phrase.prototype.getEvents = function(start, length, includeNoteEvents, includeTextEvents) {
+	var i, l;
+
 	var events = {
 		noteEvents : [],
 		textEvents : []
@@ -260,7 +268,7 @@ Aural.Music.Phrase.prototype.getEvents = function(start, length, includeNoteEven
 	var end = start + length;
 	
 	if(includeNoteEvents) {
-		for(var i = 0, l = this.noteEvents.length; i < l; i++) {
+		for(i = 0, l = this.noteEvents.length; i < l; i++) {
 			event = this.noteEvents[i];
 			
 			if(event.start >= start && event.start <= end) {
@@ -270,7 +278,7 @@ Aural.Music.Phrase.prototype.getEvents = function(start, length, includeNoteEven
 	}
 	
 	if(includeTextEvents) {
-		for(var i = 0, l = this.textEvents.length; i < l; i++) {
+		for(i = 0, l = this.textEvents.length; i < l; i++) {
 			event = this.textEvents[i];
 			
 			if(event.start >= start && event.start <= end) {

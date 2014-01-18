@@ -23,7 +23,7 @@ Aural.Utils.Support.isAudioContextSupported = function() {
 
 /**
  * Get an audiocontext defined by an identifier, in an effort to limit the number of instances
- * @param {string} identifier - Identifier (default : global)
+ * @param {string} [identifier=global] - Identifier
  * @return {AudioContext} AudioContext instance
  */
 Aural.Utils.Support.getAudioContext = function(identifier) {

@@ -19,10 +19,10 @@ Aural.Sound.Wavelet.Wavelet.prototype.maxValue = null;
 
 /**
  * Get a specific sample
- * @param {float} pos - Position in the sample
+ * @param {Number} pos - Position in the sample
  * @param {boolean} normalize - Whether to normalize the samples based on the max value of the wavelet
- * @param {integer} desiredPolarity - Desired polarity (1 or -1)
- * @return {float} Sound sample
+ * @param {Number} desiredPolarity - Desired polarity (1 or -1)
+ * @return {Number} Sound sample
  */
 Aural.Sound.Wavelet.Wavelet.prototype.getSample = function(pos, normalize, desiredPolarity) {
 	var result = Aural.Sound.Interpolation.process(pos, this.buffer);
@@ -49,11 +49,11 @@ Aural.Sound.Wavelet.Collection.prototype.currentWavelet = null;
 
 /**
  * Set the wavelet collection
- * @param {Aural.Sound.Wavelet.Wavelet|ArrayBuffer} wavelets - Array of wavelets or buffer of samples to process
+ * @param {Aural.Sound.Wavelet.Wavelet[]|ArrayBuffer} wavelets - Array of wavelets or buffer of samples to process
  */
 Aural.Sound.Wavelet.Collection.prototype.setWavelets = function(wavelets) {
 	if(wavelets.length > 0) {
-		if(typeof wavelets[0] != 'object') {
+		if(typeof wavelets[0] !== 'object') {
 			wavelets = this.processAudio(wavelets);
 		}
 	} else {
@@ -66,8 +66,8 @@ Aural.Sound.Wavelet.Collection.prototype.setWavelets = function(wavelets) {
 
 /**
  * Process a buffer into an array of wavelets
- * @param {array|ArrayBuffer} buffer - Sound buffer
- * @param {[type]} maxWavelets - Maximum number of wavelets to return
+ * @param {Array|ArrayBuffer} buffer - Sound buffer
+ * @param {Number} [maxWavelets] - Maximum number of wavelets to return
  * @return {Aural.Sound.Wavelet.Wavelet[]} Array of wavelets
  */
 Aural.Sound.Wavelet.Collection.prototype.processAudio = function(buffer, maxWavelets) {
@@ -104,7 +104,7 @@ Aural.Sound.Wavelet.Collection.prototype.processAudio = function(buffer, maxWave
 
 /**
  * Get the wavelet at the given index
- * @param {integer} index - Index of the wavelet
+ * @param {Number} index - Index of the wavelet
  * @return {Aural.Sound.Wavelet.Wavelet} Wavelet
  */
 Aural.Sound.Wavelet.Collection.prototype.get = function(index) {
@@ -140,10 +140,10 @@ Aural.Sound.Wavelet.Collection.prototype.random = function() {
 	while(!found) {
 		position = Math.floor(Math.random() * this.wavelets.length);
 		
-		if(position != this.currentWavelet) {
+		if(position !== this.currentWavelet) {
 			wavelet = this.wavelets[position];
 			
-			if(wavelet.polarity == desiredPolarity) {
+			if(wavelet.polarity === desiredPolarity) {
 				found = true;
 			}
 		}

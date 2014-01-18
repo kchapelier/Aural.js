@@ -6,7 +6,7 @@ Aural.Music.ScaleList = {
 	scales : [],
 	/**
 	 * Add a scale to the list
-	 * @param {integer[]} intervals - Successive intervals of the scale
+	 * @param {Number[]} intervals - Successive intervals of the scale
 	 * @param {string[]} titles - Array of possible titles
 	 */
 	addScale : function(intervals, titles) {
@@ -14,7 +14,7 @@ Aural.Music.ScaleList = {
 	},
 	/**
 	 * Compares an array of successive intervals to a scale and return every matching keyed copy
-	 * @param {integer[]} intervals - Array of successive intervals
+	 * @param {Object} intervals - Array of successive intervals
 	 * @param {Aural.Music.Scale} scale - Scale
 	 * @returns {Aural.Music.Scale[]} Matching keyed scales
 	 */
@@ -22,12 +22,13 @@ Aural.Music.ScaleList = {
 		var input = intervals.intervals;
 		var expected = scale.intervals;
 		var correctScales = [];
-		
-		for(var x = 0, l = expected.length; x < l; x++) {
+		var x, i, l, nl;
+
+		for(x = 0, l = expected.length; x < l; x++) {
 			var mExpected = expected.slice(0);
 			var offset = 0;
 			
-			for(var i = 0; i < x; i++) {
+			for(i = 0; i < x; i++) {
 				offset+= mExpected[0];
 				mExpected.push(mExpected.shift());
 			}
@@ -35,7 +36,7 @@ Aural.Music.ScaleList = {
 			var expectPos = 0;
 			var correct = false;
 
-			for(var i = 0, nl = input.length; i < nl; i++) {
+			for(i = 0, nl = input.length; i < nl; i++) {
 				var val = input[i];
 				var expectVal = 0;
 				correct = false;
@@ -45,7 +46,7 @@ Aural.Music.ScaleList = {
 					
 					expectPos++;
 					
-					if(expectVal == val) {
+					if(expectVal === val) {
 						correct = true;
 						break;
 					} else if(expectPos >= mExpected.length || expectVal > val) {
@@ -68,12 +69,13 @@ Aural.Music.ScaleList = {
 	},
 	/**
 	 * Normalize a set of notes to successive intervals
-	 * @param {string[]|integer[]|Aural.Music.Note[]} input - Notes
-	 * @returns {integer[]} Array of successive intervals
+	 * @param {string[]|Number[]|Aural.Music.Note[]} input - Notes
+	 * @returns {Object} Array of successive intervals
 	 */
 	normalizeInput : function(input) {
-		
-		for(var i = 0, l = input.length; i < l; i++) {
+		var i, l;
+
+		for(i = 0, l = input.length; i < l; i++) {
 			var type = typeof input[i];
 			
 			switch(type) {
@@ -97,9 +99,7 @@ Aural.Music.ScaleList = {
 		var mInput = input.slice(0);
 		mInput.push(mInput[0] + 12);
 		
-		var base = mInput[0];
-		
-		for(var l = mInput.length; l--;) {
+		for(l = mInput.length; l--;) {
 			mInput[l]-= mInput[l - 1];
 		}
 		
@@ -111,7 +111,7 @@ Aural.Music.ScaleList = {
 	},
 	/**
 	 * Get all scales matching a given set of notes
-	 * @param {string[]|integer[]|Aural.Music.Note[]} notes - Notes
+	 * @param {string[]|Number[]|Aural.Music.Note[]} notes - Notes
 	 * @param {boolean} exactOnly - Whether to return only the scales matching exactly without any additionnal notes
 	 * @returns {Aural.Music.Scale[]} Array of matching scales
 	 */
@@ -124,7 +124,7 @@ Aural.Music.ScaleList = {
 			var scales = this.compareIntervals(intervals, this.scales[l]);
 			
 			for(var i = scales.length; i--;) {
-				if(exactOnly && scales[i].intervals.length != intervals.intervals.length) {
+				if(exactOnly && scales[i].intervals.length !== intervals.intervals.length) {
 					continue;
 				}
 				
@@ -143,7 +143,7 @@ Aural.Music.ScaleList = {
 	getScale : function(name, key) {
 		for(var i = 0, l = this.scales.length; i < l; i++) {
 			for(var k = 0, l2 = this.scales[i].titles.length; k < l2; k++) {
-				if(this.scales[i].titles[k] == name) {
+				if(this.scales[i].titles[k] === name) {
 					return this.scales[i].copy(key);
 				}
 			}

@@ -37,6 +37,6 @@ Aural.Sound.Interpolation = {
 		max = (max >= length) ? 0 : max;
 
 		ratio = (1 - Math.cos(ratio * Math.PI)) / 2;
-		return data[max] * ratio + data[min] * (1 - ratio)
+		return data[max] * ratio + data[min] * (1 - ratio);
 	}
 };

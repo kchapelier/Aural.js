@@ -39,18 +39,20 @@ Aural.Utils.Sfz.Region.prototype.switchPrevious = null;
 
 /**
  * Set several properties of the regions
- * @param {object} properties - Object containing the options
+ * @param {Object} properties - Object containing the options
  */
 Aural.Utils.Sfz.Region.prototype.setProperties = function(properties) {
 	for(var key in properties) {
-		this.setProperty(key, properties[key]);
+		if(properties.hasOwnProperty(key)) {
+			this.setProperty(key, properties[key]);
+		}
 	}
 };
 
 /**
  * Set a specific property of the region
  * @param {string} property - Property name (as per sfz specifications)
- * @param {mixed} value - Value
+ * @param {*} value - Value
  */
 Aural.Utils.Sfz.Region.prototype.setProperty = function(property, value) {
 	switch(property) {
@@ -66,10 +68,10 @@ Aural.Utils.Sfz.Region.prototype.setProperty = function(property, value) {
 			this.setProperty('picth_keycenter', parseInt(value, 10));
 			break;
 		case 'lokey':
-			value = (typeof value == 'string' && !/^[0-9]+$/.test(value) ? Aural.Music.Note.getMidiFromLabel(value): parseInt(value, 10));
+			value = (typeof value === 'string' && !/^[0-9]+$/.test(value) ? Aural.Music.Note.getMidiFromLabel(value): parseInt(value, 10));
 			this.loKey = Math.min(127, Math.max(0, value)); break;
 		case 'hikey':
-			value = (typeof value == 'string' && !/^[0-9]+$/.test(value) ? Aural.Music.Note.getMidiFromLabel(value): parseInt(value, 10));
+			value = (typeof value === 'string' && !/^[0-9]+$/.test(value) ? Aural.Music.Note.getMidiFromLabel(value): parseInt(value, 10));
 			this.hiKey = Math.min(127, Math.max(0, value)); break;
 		case 'lovel':
 			this.loVelocity = Math.min(127, Math.max(0, parseInt(value, 10))); break;
@@ -81,7 +83,7 @@ Aural.Utils.Sfz.Region.prototype.setProperty = function(property, value) {
 			this.hiRand = Math.min(1, Math.max(0, parseFloat(value))); break;
 		case 'lobpm':
 			this.loBpm = Math.min(500, Math.max(0, parseFloat(value))); break;
-		case 'hirand':
+		case 'hibpm':
 			this.hiBpm = Math.min(500, Math.max(0, parseFloat(value))); break;
 		case 'seq_length':
 			this.sequenceLength = Math.min(100, Math.max(1, parseInt(value, 10))); break;
@@ -98,33 +100,33 @@ Aural.Utils.Sfz.Region.prototype.setProperty = function(property, value) {
 		case 'end':
 			this.end = Math.max(-1, parseInt(value, 10)); break;
 		case 'transpose':
-			this.transpose = Math.min(127, Math.max(-127, parseInt(value))); break;
+			this.transpose = Math.min(127, Math.max(-127, parseInt(value, 10))); break;
 		case 'tune':
-			this.tune = Math.min(100, Math.max(1, parseInt(value))); break;
+			this.tune = Math.min(100, Math.max(1, parseInt(value, 10))); break;
 		case 'pitch_keycenter':
-			value = (typeof value == 'string' && !/^[0-9]+$/.test(value) ? Aural.Music.Note.getMidiFromLabel(value): parseInt(value, 10));
+			value = (typeof value === 'string' && !/^[0-9]+$/.test(value) ? Aural.Music.Note.getMidiFromLabel(value): parseInt(value, 10));
 			this.pitchKeyCenter = Math.min(127, Math.max(0, value)); break;
 		case 'pitch_keytrack':
 			this.pitchKeyTrack = Math.min(1200, Math.max(-1200, parseInt(value, 10))); break;
 		case 'pitch_random':
 			this.pitchRandom = Math.min(9600, Math.max(0, parseInt(value, 10))); break;
 		case 'sw_last':
-			value = (typeof value == 'string' && !/^[0-9]+$/.test(value) ? Aural.Music.Note.getMidiFromLabel(value): parseInt(value, 10));
+			value = (typeof value === 'string' && !/^[0-9]+$/.test(value) ? Aural.Music.Note.getMidiFromLabel(value): parseInt(value, 10));
 			this.switchLast = Math.min(127, Math.max(0, value)); break;
 		case 'sw_lokey':
-			value = (typeof value == 'string' && !/^[0-9]+$/.test(value) ? Aural.Music.Note.getMidiFromLabel(value): parseInt(value, 10));
+			value = (typeof value === 'string' && !/^[0-9]+$/.test(value) ? Aural.Music.Note.getMidiFromLabel(value): parseInt(value, 10));
 			this.switchLoKey = Math.min(127, Math.max(0, value)); break;
 		case 'sw_hikey':
-			value = (typeof value == 'string' && !/^[0-9]+$/.test(value) ? Aural.Music.Note.getMidiFromLabel(value): parseInt(value, 10));
+			value = (typeof value === 'string' && !/^[0-9]+$/.test(value) ? Aural.Music.Note.getMidiFromLabel(value): parseInt(value, 10));
 			this.switchHiKey = Math.min(127, Math.max(0, value)); break;
 		case 'sw_down':
-			value = (typeof value == 'string' && !/^[0-9]+$/.test(value) ? Aural.Music.Note.getMidiFromLabel(value): parseInt(value, 10));
+			value = (typeof value === 'string' && !/^[0-9]+$/.test(value) ? Aural.Music.Note.getMidiFromLabel(value): parseInt(value, 10));
 			this.switchDown = Math.min(127, Math.max(0, value)); break;
 		case 'sw_up':
-			value = (typeof value == 'string' && !/^[0-9]+$/.test(value) ? Aural.Music.Note.getMidiFromLabel(value): parseInt(value, 10));
+			value = (typeof value === 'string' && !/^[0-9]+$/.test(value) ? Aural.Music.Note.getMidiFromLabel(value): parseInt(value, 10));
 			this.switchUp = Math.min(127, Math.max(0, value)); break;
 		case 'sw_previous':
-			value = (typeof value == 'string' && !/^[0-9]+$/.test(value) ? Aural.Music.Note.getMidiFromLabel(value): parseInt(value, 10));
+			value = (typeof value === 'string' && !/^[0-9]+$/.test(value) ? Aural.Music.Note.getMidiFromLabel(value): parseInt(value, 10));
 			this.switchPrevious = parseInt(value, 10); break;
 		default:
 			break;
@@ -133,11 +135,11 @@ Aural.Utils.Sfz.Region.prototype.setProperty = function(property, value) {
 
 /**
  * Check if the region must be triggered by an incoming event
- * @param {integer} key - Midi value
- * @param {float} cents - Cents
- * @param {float} velocity - Velocity
- * @param {float} bpm - Tempo in beats per minutes
- * @param {float} rand - Random value for round robin
+ * @param {Number} key - Midi value
+ * @param {Number} cents - Cents
+ * @param {Number} velocity - Velocity
+ * @param {Number} bpm - Tempo in beats per minutes
+ * @param {Number} rand - Random value for round robin
  * @return {boolean} Return whether the region must be triggered
  */
 Aural.Utils.Sfz.Region.prototype.matchNote = function(key, cents, velocity, bpm, rand) {
@@ -150,7 +152,7 @@ Aural.Utils.Sfz.Region.prototype.matchNote = function(key, cents, velocity, bpm,
 	return (
 		key >= this.loKey && key <= this.hiKey &&
 		velocity >= this.loVelocity && velocity <= this.hiVelocity && //velocity layer
-		this.innerSequence == this.sequencePosition && rand >= this.loRand && rand <= this.hiRand && //round robin
+		this.innerSequence === this.sequencePosition && rand >= this.loRand && rand <= this.hiRand && //round robin
 		bpm >= this.loBpm && bpm <= this.hiBpm
 	);
 };
@@ -163,8 +165,8 @@ Aural.Utils.Sfz.File.prototype.regions = null;
 
 /**
  * Add a region to the file based on its groups options and its own
- * @param {object} groupOptions - Group options of the region
- * @param {object} regionOptions - Own options of the region
+ * @param {Object} groupOptions - Group options of the region
+ * @param {Object} regionOptions - Own options of the region
  */
 Aural.Utils.Sfz.File.prototype.addRegion = function(groupOptions, regionOptions) {
 	//ignore regions without sample as defined by the specifications
@@ -187,21 +189,20 @@ Aural.Utils.Sfz.File.prototype.parse = function(data){
 	var regionOptions = {};
 	var inGroup = false;
 	var inRegion = false;
-	var createRegion = false;
 
 	this.regions = [];
 	
 	for(var i = 0, l = definitions.length; i < l; i++) {
 		var definition = definitions[i];
 
-		if(definition == '<group>') {
+		if(definition === '<group>') {
 			inGroup = true;
 			inRegion = false;
 			groupOptions = {};
 			continue;
 		}
 		
-		if(definition == '<region>') {
+		if(definition === '<region>') {
 			inGroup = false;
 			inRegion = true;
 			regionOptions = {};

@@ -8,11 +8,13 @@ Aural.Music.ChordList = {
 	},
 	/**
 	 * Normalize a set of notes to intervals
-	 * @param {string[]|integer[]|Aural.Music.Note[]} input - Notes
-	 * @returns {integer[]} Array of intervals
+	 * @param {string[]|Number[]|Aural.Music.Note[]} input - Notes
+	 * @returns {Object} Array of intervals
 	 */
 	normalizeInput : function(input) {
-		for(var i = 0, l = input.length; i < l; i++) {
+		var i, l;
+
+		for(i = 0, l = input.length; i < l; i++) {
 			var type = typeof input[i];
 			
 			switch(type) {
@@ -33,7 +35,7 @@ Aural.Music.ChordList = {
 			intervals : null
 		};
 
-		for(var l = input.length; l--;) {
+		for(l = input.length; l--;) {
 			input[l]-= input[Math.max(0, l - 1)];
 		}
 		
@@ -42,11 +44,11 @@ Aural.Music.ChordList = {
 		return intervals;
 	},
 	compareIntervals : function (intervals, chord) {
-		if(intervals.intervals.length == chord.intervals.length) {
+		if(intervals.intervals.length === chord.intervals.length) {
 			var correct = true;
 
 			for(var i = 0, l = intervals.intervals.length; i < l; i++) {
-				if(intervals.intervals[i] != chord.intervals[i]) {
+				if(intervals.intervals[i] !== chord.intervals[i]) {
 					correct = false;
 					break;
 				}
@@ -87,11 +89,13 @@ Aural.Music.ChordList = {
 		var shortname = name;
 
 		for(var from in this.shortnameTranslations) {
-			shortname = shortname.replace(from, this.shortnameTranslations[from]);
+			if(this.shortnameTranslations.hasOwnProperty(from)) {
+				shortname = shortname.replace(from, this.shortnameTranslations[from]);
+			}
 		}
 
 		for(var i = 0, l = this.chords.length; i < l; i++) {
-			if(this.chords[i].name == name || this.chords[i].shortnames.indexOf(shortname) > -1) {
+			if(this.chords[i].name === name || this.chords[i].shortnames.indexOf(shortname) > -1) {
 				return this.chords[i].copy(key, octave);
 			}
 		}

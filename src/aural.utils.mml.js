@@ -13,17 +13,26 @@ Aural.Utils.MML.File = function(mml) {
 
 Aural.Utils.MML.File.prototype.voices = null;
 
+/**
+ * Get the number of voices
+ * @returns {Number} Number of voices
+ */
 Aural.Utils.MML.File.prototype.getVoiceCount = function() {
 	return this.voices.length;
 };
 
+/**
+ * Return the desired voice as an Aural.Music.Phrase instance.
+ * @param {Number} [voice] - Identifier of the voice, if null all voices are inserted in the phrase
+ * @returns {Aural.Music.Phrase} Phrase
+ */
 Aural.Utils.MML.File.prototype.getPhrase = function(voice) {
 	var phrase;
-	
+	var i, l;
 	if(voice === null || typeof voice === 'undefined') {
 		phrase = new Aural.Music.Phrase(0, true);
 
-		for(var i = 0, l = this.voices.length; i < l; i++) {
+		for(i = 0, l = this.voices.length; i < l; i++) {
 			var voicePhrase = this.getPhrase(i);
 			phrase.add(voicePhrase);
 		}
@@ -32,7 +41,7 @@ Aural.Utils.MML.File.prototype.getPhrase = function(voice) {
 			phrase = new Aural.Music.Phrase(0, true);
 			var position = 0;
 
-			for(var i = 0, l = this.voices[voice].length; i < l; i++) {
+			for(i = 0, l = this.voices[voice].length; i < l; i++) {
 				var event = this.voices[voice][i];
 				//console.log(event);
 				var duration = 10; //TODO fix this
@@ -72,7 +81,6 @@ Aural.Utils.MML.File.prototype.parseString = function(mml) {
 		var panning = 4;
 		var detune = 0;
 		var transpose = 0;
-		var position = 0;
 		
 		for(var c = 0, lc = phrase.length; c < lc; c++) {
 			value = phrase[c];
@@ -84,40 +92,40 @@ Aural.Utils.MML.File.prototype.parseString = function(mml) {
 					
 					switch(cmd[0]) {
 						case '>':
-							octave+= Math.max(1, cmd.slice(1).join(''));
+							octave+= Math.max(1, parseInt(cmd.slice(1).join(''), 10));
 							break;
 						case '<':
-							octave-= Math.max(1, cmd.slice(1).join(''));
+							octave-= Math.max(1, parseInt(cmd.slice(1).join(''), 10));
 							break;
 						case 'o':
-							octave = parseInt(cmd.slice(1).join(''));
+							octave = parseInt(cmd.slice(1).join(''), 10);
 							break;
 						case ')':
-							volume+= Math.max(1, cmd.slice(1).join(''));
+							velocity+= Math.max(1, parseInt(cmd.slice(1).join(''), 10));
 							break;
 						case '(':
-							volume-= Math.max(1, cmd.slice(1).join(''));
+							velocity-= Math.max(1, parseInt(cmd.slice(1).join(''), 10));
 							break;
 						case 'l':
-							length = parseInt(cmd.slice(1).join(''));
+							length = parseInt(cmd.slice(1).join(''), 10);
 							break;
 						case 'v':
-							velocity = parseInt(cmd.slice(1).join(''));
+							velocity = parseInt(cmd.slice(1).join(''), 10);
 							break;
 						case 'q':
-							quantize = parseInt(cmd.slice(1).join(''));
+							quantize = parseInt(cmd.slice(1).join(''), 10);
 							break;
 						case 'p':
-							panning = parseInt(cmd.slice(1).join(''));
+							panning = parseInt(cmd.slice(1).join(''), 10);
 							break;
 						case 't':
-							tempo = parseInt(cmd.slice(1).join(''));
+							tempo = parseInt(cmd.slice(1).join(''), 10);
 							break;
 						case 'k':
 							if(cmd[1] === 't') {
-								transpose = parseInt(cmd.slice(2).join(''));
+								transpose = parseInt(cmd.slice(2).join(''), 10);
 							} else {
-								detune = parseInt(cmd.slice(1).join('')) / 6400;
+								detune = parseInt(cmd.slice(1).join(''), 10) / 6400;
 							}
 							break;
 						case 'a':
@@ -129,9 +137,9 @@ Aural.Utils.MML.File.prototype.parseString = function(mml) {
 						case 'g':
 							var note = cmd[0];
 							
-							if(cmd[1] == '#' || cmd[1] == '+') {
+							if(cmd[1] === '#' || cmd[1] === '+') {
 								note = cmd[0] + '#';
-							} else if(cmd[1] == '-') {
+							} else if(cmd[1] === '-') {
 								note = cmd[0] + 'b';
 							}
 							

@@ -5,7 +5,7 @@ Aural.Music.Tuning = {
 	defaultMiddleA : 440,
 	/**
 	 * Set the frequency of the middle A (A4)
-	 * @param {float} frequency - Frequency
+	 * @param {Number} frequency - Frequency
 	 */
 	setMiddleA : function(frequency) {
 		frequency = frequency || this.defaultMiddleA;

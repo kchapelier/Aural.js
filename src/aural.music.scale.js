@@ -24,12 +24,13 @@ Aural.Music.Scale.prototype.getHemitonicType = function(resultType) {
 	var maxSuccessive = 0;
 	var previous = 0;
 	var successive = 0;
-	
-	for(var i = 0, l = this.intervals.length; i < l; i++) {
-		if(this.intervals[i] == 1) {
+	var i, l;
+
+	for(i = 0, l = this.intervals.length; i < l; i++) {
+		if(this.intervals[i] === 1) {
 			nbSemitone++;
 			
-			if(previous == 1) {
+			if(previous === 1) {
 				successive++;
 				maxSuccessive = Math.max(maxSuccessive, successive);
 			}
@@ -40,9 +41,9 @@ Aural.Music.Scale.prototype.getHemitonicType = function(resultType) {
 	
 	if(this.intervals.length < 12) {
 		//iterating a second time to properly count the successive semitones
-		for(var i = 0, l = this.intervals.length; i < l; i++) {
-			if(this.intervals[i] == 1) {
-				if(previous == 1) {
+		for(i = 0, l = this.intervals.length; i < l; i++) {
+			if(this.intervals[i] === 1) {
+				if(previous === 1) {
 					successive++;
 					maxSuccessive = Math.max(maxSuccessive, successive);
 				}
@@ -79,7 +80,7 @@ Aural.Music.Scale.prototype.getHemitonicType = function(resultType) {
 					return 'decahemitonic';
 				case 11:
 					return 'undecahemitonic';
-				case 12:
+				default:
 					return 'chromatic';
 					
 			}
@@ -128,7 +129,7 @@ Aural.Music.Scale.prototype.getType = function() {
 
 /**
  * Get all the notes from the scale
- * @param {integer|null} octave - Desired octave for the notes
+ * @param {Number} [octave=0] - Desired octave for the notes
  * @returns {Aural.Music.Note[]} Notes
  */
 Aural.Music.Scale.prototype.getNotes = function(octave) {
@@ -212,7 +213,7 @@ Aural.Music.Scale.prototype.containsChord = function(chord) {
 	var scaleNotes = this.getNotesAsLabels();
 
 	for(var i = 0, l = chordNotes.length; i < l; i++) {
-		if(scaleNotes.indexOf(chordNotes[i]) == -1) {
+		if(scaleNotes.indexOf(chordNotes[i]) === -1) {
 			contained = false;
 			break;
 		}
@@ -232,7 +233,7 @@ Aural.Music.Scale.prototype.setKey = function(key) {
 
 /**
  * Transpose the scale
- * @param {integer} intervals - Number of intervals
+ * @param {Number} intervals - Number of intervals
  */
 Aural.Music.Scale.prototype.transpose = function(intervals) {
 	var offset = this.getKeyOffset() + intervals;
@@ -242,7 +243,7 @@ Aural.Music.Scale.prototype.transpose = function(intervals) {
 
 /**
  * Return the offset of the key from C
- * @returns {integer} Offset
+ * @returns {Number} Offset
  */
 Aural.Music.Scale.prototype.getKeyOffset = function() {
 	return Aural.Music.Note.getMidiFromLabel(this.key) % 12;

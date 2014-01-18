@@ -52,11 +52,11 @@ Aural.Utils.Midi.File.prototype.readTrack = function(offset, trackNumber) {
 	var current = null;
 
 	while(offset < trackLength + startOffset) {
-		current = buffer.readByte(offset)
+		current = buffer.readByte(offset);
 
 		cmdBuffer.push(current);
 
-		if(current == 0) {
+		if(current === 0) {
 			var str = '';
 			for(var i = 0, l = cmdBuffer.length; i < l; i++) {
 				str+= cmdBuffer[i].toString(16) + ' ';
@@ -64,7 +64,7 @@ Aural.Utils.Midi.File.prototype.readTrack = function(offset, trackNumber) {
 
 			console.log('cmd : ' + str);
 
-			if(cmdBuffer[0] == 0xFF) {
+			if(cmdBuffer[0] === 0xFF) {
 				switch(cmdBuffer[1]) {
 					case 0x00:
 						console.log(' * sequence number');
@@ -176,8 +176,8 @@ Aural.Utils.Midi.File.prototype.readTrack = function(offset, trackNumber) {
 
 /**
  * Read the header of the file
- * @param {integer} offset - Starting byte
- * @return {integer} Updated offset
+ * @param {Number} offset - Starting byte
+ * @return {Number} Updated offset
  */
 Aural.Utils.Midi.File.prototype.readFileHeader = function(offset) {
 	var buffer = this.buffer;
@@ -198,7 +198,7 @@ Aural.Utils.Midi.File.prototype.readFileHeader = function(offset) {
 
 	if(this.format > 1) {
 		console.log('e2');
-		throw('unsupported format : ' + format);
+		throw('unsupported format : ' + this.format);
 	}
 
 	if(this.trackNumber < 1 || (this.format === 0 && this.trackNumber > 1)) {
@@ -262,7 +262,7 @@ Aural.Utils.Midi.ControlChangesDictionary = {
 	reverseDictionary : {},
 	/**
 	 * Get the name of a CC by its number
-	 * @param {integer} cc - Identifying number of the control change
+	 * @param {Number} cc - Identifying number of the control change
 	 * @return {string} Name
 	 */
 	getName : function(cc) {
@@ -274,8 +274,8 @@ Aural.Utils.Midi.ControlChangesDictionary = {
 	},
 	/**
 	 * Get the definition of a CC by its number
-	 * @param {integer} cc - Identifying number of the control change
-	 * @return {object} Definition
+	 * @param {Number} cc - Identifying number of the control change
+	 * @return {Object} Definition
 	 */
 	get : function(cc) {
 		if(!!this.dictionary[cc]) {
@@ -287,7 +287,7 @@ Aural.Utils.Midi.ControlChangesDictionary = {
 	/**
 	 * Get the number of a CC by its name
 	 * @param {string} name - Name of the control change
-	 * @return {integer} Identifying number of the control change
+	 * @return {Number} Identifying number of the control change
 	 */
 	getCC : function(name) {
 		if(!!this.reverseDictionary[name]) {
@@ -298,23 +298,24 @@ Aural.Utils.Midi.ControlChangesDictionary = {
 	},
 	/**
 	 * Build the reverse dictionary (name => cc number)
-	 * @private
 	 */
 	buildReverseDictionary : function() {
 		var control = null;
 		var reverseDictionary = {};
 
 		for(var key in this.dictionary) {
-			control = this.dictionary[key];
-			key = parseInt(key, 10);
+			if(this.dictionary.hasOwnProperty(key)) {
+				control = this.dictionary[key];
+				key = parseInt(key, 10);
 
-			if(control !== null) {
-				if(!!control['label']) {
-					reverseDictionary[control.label] = key;
-				}
+				if(control !== null) {
+					if(!!control['label']) {
+						reverseDictionary[control.label] = key;
+					}
 
-				if(!!control['shortname']) {
-					reverseDictionary[control.shortname] = key;
+					if(!!control['shortname']) {
+						reverseDictionary[control.shortname] = key;
+					}
 				}
 			}
 		}

@@ -14,7 +14,7 @@ Aural.Utils.XHR = {
 	 * @param {function} callbackError - Callback on failure (one failure means the end of the requests)
 	 */
 	multiLoad : function(files, callbackFile, callbackFinal, callbackError) {
-		if(Aural.Utils.XHR.preferredMode == 'serial') {
+		if(Aural.Utils.XHR.preferredMode === 'serial') {
 			this.serialLoad(files, callbackFile, callbackFinal, callbackError);
 		} else {
 			this.parallelLoad(files, callbackFile, callbackFinal, callbackError);
@@ -78,7 +78,7 @@ Aural.Utils.XHR = {
 
 						loaded++;
 
-						if(loaded == files.length && callbackFinal) {
+						if(loaded === files.length && callbackFinal) {
 							callbackFinal();
 						}
 					}
@@ -154,7 +154,6 @@ Aural.Utils.XHR = {
 							callback(file);
 						}
 					} catch(e) {
-						console.log(e.stack, e);
 						if(callbackError) {
 							callbackError(request);
 						}

@@ -77,7 +77,7 @@ Aural.Sound.BufferMap.prototype.setTransientMapLimiting = function(tlimiting) {
 /**
  * Create of volume map for the wavelet of a given polarity
  * @param {Aural.Sound.Wavelet.Collection} wavelets - Wavelets
- * @param {integer} polarity - Polarity (1 or -1)
+ * @param {Number} polarity - Polarity (1 or -1)
  * @private
  * @return {Float32Array} Polar volume map
  */
@@ -90,14 +90,11 @@ Aural.Sound.BufferMap.prototype.processPolarVolumeMap = function(wavelets, polar
 	var vsmoothing = this.volumeMapSmoothing;
 	var vlimiting = this.volumeMapLimiting;
 
-	var min = 0;
 	var max = 0;
 	var advance = 0;
 	var duration = 0;
 	var maxOffset = 0;
 
-	var previous = 0;
-	var previousPeak = 0;
 	var sample = 0;
 	var nextSample = 0;
 	var pos = 0;
@@ -106,7 +103,7 @@ Aural.Sound.BufferMap.prototype.processPolarVolumeMap = function(wavelets, polar
 	for(var i = 0, l = wavelets.length; i < l; i++) {
 		wavelet = wavelets.wavelets[i];
 
-		if(wavelet.polarity != polarity) {
+		if(wavelet.polarity !== polarity) {
 			pos+= wavelet.length;
 			continue;
 		}
@@ -125,7 +122,7 @@ Aural.Sound.BufferMap.prototype.processPolarVolumeMap = function(wavelets, polar
 
 			var nextWavelet = !!wavelets.wavelets[i] ? wavelets.wavelets[i] : null;
 
-			if(nextWavelet && nextWavelet.polarity == polarity) {
+			if(nextWavelet && nextWavelet.polarity === polarity) {
 				nextSample = nextWavelet.maxValue;
 
 				if(max < nextSample) {
@@ -153,31 +150,33 @@ Aural.Sound.BufferMap.prototype.processPolarVolumeMap = function(wavelets, polar
 	peaks[this.buffer.length - 1] = 0;
 
 	var previousPos = 0;
-	var duration = 0;
 	var start = 0;
-	previousPeak = 0;
+	var previousPeak = 0;
+	duration = 0;
 	sample = 0;
 
 	var map = new Float32Array(this.buffer.length);
 
 	for(var key in peaks) {
-		key*=1;
-		sample = peaks[key];
+		if(peaks.hasOwnProperty(key)) {
+			key*=1;
+			sample = peaks[key];
 
-		sample = sample < previousPeak ? sample * (1 - vsmoothing) + previousPeak * vsmoothing : sample;
+			sample = sample < previousPeak ? sample * (1 - vsmoothing) + previousPeak * vsmoothing : sample;
 
-		map[key] = sample;
+			map[key] = sample;
 
-		duration = key - previousPos;
+			duration = key - previousPos;
 
-		start = previousPos;
+			start = previousPos;
 
-		for(; previousPos < key; previousPos++) {
-			map[previousPos] = Aural.Sound.Interpolation.linear((previousPos - start) / duration, [previousPeak, sample]);
+			for(; previousPos < key; previousPos++) {
+				map[previousPos] = Aural.Sound.Interpolation.linear((previousPos - start) / duration, [previousPeak, sample]);
+			}
+
+			previousPeak = sample;
+			previousPos = key;
 		}
-
-		previousPeak = sample;
-		previousPos = key;
 	}
 
 	return map;
@@ -187,10 +186,6 @@ Aural.Sound.BufferMap.prototype.processPolarVolumeMap = function(wavelets, polar
  * Create the volume map (amplitude envelope)
  */
 Aural.Sound.BufferMap.prototype.processVolumeMap = function() {
-	var vgate = this.volumeMapGate;
-	var vsmoothing = this.volumeMapSmoothing;
-	var vlimiting = this.volumeMapLimiting;
-
 	var wavelets = this.getWavelets();
 
 	var positiveMap = this.processPolarVolumeMap(wavelets, 1);
@@ -222,7 +217,6 @@ Aural.Sound.BufferMap.prototype.getVolumeMap = function() {
  * Create the transient map
  */
 Aural.Sound.BufferMap.prototype.processTransientsMap = function() {
-	var pos = 0;
 	var previous = 0;
 	var sample = 0;
 	var min = 0;
@@ -232,9 +226,7 @@ Aural.Sound.BufferMap.prototype.processTransientsMap = function() {
 
 	var tgate = this.transientMapGate;
 	var tlimiting = this.transientMapLimiting;
-	
-	tlimiting = 0.99;
-	tgate = 0.2;
+
 	var tspace = 2000;
 	var ispace = 0;
 	var transients = [];
