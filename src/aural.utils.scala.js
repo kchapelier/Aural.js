@@ -1,6 +1,6 @@
 "use strict";
 
-Aural.Utils.ScalaFile = function(content) {
+Aural.Utils.Scala.File = function(content) {
 	this.description = '';
 	this.intervals = [];
 	
@@ -9,20 +9,39 @@ Aural.Utils.ScalaFile = function(content) {
 	}
 };
 
-Aural.Utils.ScalaFile.prototype.description = null;
-Aural.Utils.ScalaFile.prototype.numberValues = null;
-Aural.Utils.ScalaFile.prototype.intervals = null;
+/**
+ * Description of the scala file
+ * @type {String}
+ */
+Aural.Utils.Scala.File.prototype.description = null;
 
-Aural.Utils.ScalaFile.prototype.parse = function(contentFile) {
+/**
+ * Number of intervals
+ * @type {Number}
+ */
+Aural.Utils.Scala.File.prototype.numberValues = null;
+
+/**
+ * Array of intervals
+ * @type {Array}
+ */
+Aural.Utils.Scala.File.prototype.intervals = null;
+
+/**
+ * Parse the content of a scala file and populate the object
+ * @param {String} contentFile - Content of the scala file
+ */
+Aural.Utils.Scala.File.prototype.parse = function(contentFile) {
 	contentFile+= "\r\n";
 	var lines = contentFile.match(/^.*[\n\r]+|$/gm);
 	var countLines = 0;
 	
 	this.intervals = [];
-	this.intervals.push(1);
-	
+
+	var line, interval, parsedInterval;
+
 	for(var x = 0, l = lines.length; x < l; x++) {
-		var line = lines[x];
+		line = lines[x];
 		
 		if(line.indexOf('!') !== 0) { //exclude comment lines
 			switch(countLines) {
@@ -33,13 +52,13 @@ Aural.Utils.ScalaFile.prototype.parse = function(contentFile) {
 					this.numberValues = parseInt(line, 10);
 					break;
 				default:
-					var interval = line.trim();
+					interval = line.trim();
 					
 					if(interval && interval !== '') {
-						interval = this.treatInterval(interval);
+						parsedInterval = this.treatInterval(interval);
 						
-						if(!isNaN(interval*1)) {
-							this.intervals.push(interval);
+						if(!isNaN(parsedInterval)) {
+							this.intervals.push(parsedInterval);
 						}
 					}
 					break;
@@ -49,31 +68,39 @@ Aural.Utils.ScalaFile.prototype.parse = function(contentFile) {
 		}
 	}
 	
-	if((this.intervals.length - 1) !== this.numberValues) {
+	if(this.intervals.length !== this.numberValues) {
 		throw 'Error in file format';
 	}
-	
-	console.log(this);
 };
 
-Aural.Utils.ScalaFile.prototype.treatInterval = function(interval) {
-	interval = interval.split(' ');
-	interval = interval[0];
-	
+/**
+ * Parse a scala interval value and return it as cents
+ * @param {String} interval - Interval in any of the valid interval scala format
+ * @returns {Number} Interval in cents
+ */
+Aural.Utils.Scala.File.prototype.treatInterval = function(interval) {
+	interval = interval.split(' ')[0];
+
+	var convertedInterval;
 	var isCent = false;
 	
-	if(interval.indexOf('/') > 0) {
+	if(interval.indexOf('/') > 0) { //ratio notation
 		var division = interval.split('/');
 		var div1 = parseFloat(division[0]);
 		var div2 = parseFloat(division[1]);
-		interval = div1 / div2;
+		convertedInterval = div1 / div2;
 	} else {
-		if(interval.indexOf('.') > 0) {
+		if(interval.indexOf('.') > 0) { //cent notation
+			convertedInterval = parseFloat(interval);
 			isCent = true;
+		} else { //integer ratio notation
+			convertedInterval = parseFloat(interval);
 		}
-		
-		interval = parseFloat(interval);
+	}
+
+	if(!isCent) {
+		convertedInterval = 1200 * Math.log(convertedInterval)  / Math.log(2);
 	}
 	
-	return interval;
+	return convertedInterval;
 };

@@ -32,6 +32,9 @@ var Aural = {
 		MML : {
 			File : null
 		},
+		Scala : {
+			File : null
+		},
 		Support : null,
 		Sfz : {
 			Region : null,
