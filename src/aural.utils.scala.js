@@ -30,6 +30,7 @@ Aural.Utils.Scala.File.prototype.intervals = null;
 /**
  * Parse the content of a scala file and populate the object
  * @param {String} contentFile - Content of the scala file
+ * @private
  */
 Aural.Utils.Scala.File.prototype.parse = function(contentFile) {
 	contentFile+= "\r\n";
@@ -77,6 +78,7 @@ Aural.Utils.Scala.File.prototype.parse = function(contentFile) {
  * Parse a scala interval value and return it as cents
  * @param {String} interval - Interval in any of the valid interval scala format
  * @returns {Number} Interval in cents
+ * @private
  */
 Aural.Utils.Scala.File.prototype.treatInterval = function(interval) {
 	interval = interval.split(' ')[0];
