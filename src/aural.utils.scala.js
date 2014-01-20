@@ -70,7 +70,7 @@ Aural.Utils.Scala.File.prototype.parse = function(contentFile) {
 	}
 	
 	if(this.intervals.length !== this.numberValues) {
-		throw 'Error in file format';
+		throw 'Error in file format : incorrect number of valid intervals';
 	}
 };
 
@@ -101,6 +101,10 @@ Aural.Utils.Scala.File.prototype.treatInterval = function(interval) {
 	}
 
 	if(!isCent) {
+		if(convertedInterval <= 0) {
+			throw 'Error in file format : negative or zero ratio as interval';
+		}
+
 		convertedInterval = 1200 * Math.log(convertedInterval) / Math.log(2);
 	}
 	
