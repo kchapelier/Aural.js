@@ -16,7 +16,7 @@ Aural.Utils.Scala.File = function(content) {
 Aural.Utils.Scala.File.prototype.description = null;
 
 /**
- * Number of intervals
+ * Number of intervals as defined in the file
  * @type {Number}
  */
 Aural.Utils.Scala.File.prototype.numberValues = null;
@@ -45,16 +45,16 @@ Aural.Utils.Scala.File.prototype.parse = function(contentFile) {
 		
 		if(line.indexOf('!') !== 0) { //exclude comment lines
 			switch(countLines) {
-				case 0: //first line is description
+				case 0: //first non-commented line is description
 					this.description = line.trim();
 					break;
-				case 1:
+				case 1: //second non-commented line is description
 					this.numberValues = parseInt(line, 10);
 					break;
-				default:
+				default: //every other non-commented lines are interval values
 					interval = line.trim();
 					
-					if(interval && interval !== '') {
+					if(interval !== '') {
 						parsedInterval = this.treatInterval(interval);
 						
 						if(!isNaN(parsedInterval)) {
@@ -99,7 +99,7 @@ Aural.Utils.Scala.File.prototype.treatInterval = function(interval) {
 	}
 
 	if(!isCent) {
-		convertedInterval = 1200 * Math.log(convertedInterval)  / Math.log(2);
+		convertedInterval = 1200 * Math.log(convertedInterval) / Math.log(2);
 	}
 	
 	return convertedInterval;

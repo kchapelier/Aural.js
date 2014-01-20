@@ -9,9 +9,9 @@ Aural.Utils.XHR = {
 	/**
 	 * Executes multiple requests 
 	 * @param {object[]} files - Array of objects with an 'url', an 'id' and a 'type'
-	 * @param {function} callbackFile - Callback on complete per request
-	 * @param {function} callbackFinal - Callback on complete
-	 * @param {function} callbackError - Callback on failure (one failure means the end of the requests)
+	 * @param {function} [callbackFile] - Callback on complete per request
+	 * @param {function} [callbackFinal] - Callback on complete
+	 * @param {function} [callbackError] - Callback on failure (one failure means the end of the requests)
 	 */
 	multiLoad : function(files, callbackFile, callbackFinal, callbackError) {
 		if(Aural.Utils.XHR.preferredMode === 'serial') {
@@ -23,9 +23,9 @@ Aural.Utils.XHR = {
 	/**
 	 * Executes successive requests 
 	 * @param {object[]} files - Array of objects with an 'url', an 'id' and a 'type'
-	 * @param {function} callbackFile - Callback on complete per request
-	 * @param {function} callbackFinal - Callback on complete
-	 * @param {function} callbackError - Callback on failure (one failure means the end of the requests)
+	 * @param {function} [callbackFile] - Callback on complete per request
+	 * @param {function} [callbackFinal] - Callback on complete
+	 * @param {function} [callbackError] - Callback on failure (one failure means the end of the requests)
 	 */
 	serialLoad : function(files, callbackFile, callbackFinal, callbackError) {
 		var loading = 0;
@@ -35,13 +35,16 @@ Aural.Utils.XHR = {
 				callbackFile(data, files[loading].id, files[loading].url);
 			}
 
+			files[loading].data = data;
+			files[loading].error = false;
+
 			loading++;
 
 			if(loading < files.length) {
 				loader();
 			} else {
 				if(callbackFinal) {
-					callbackFinal();
+					callbackFinal(files);
 				}
 			}
 		};
@@ -53,20 +56,27 @@ Aural.Utils.XHR = {
 			Aural.Utils.XHR.load(url, type, loaderCallback, callbackError);
 		};
 
-		loader();
+		if(files.length > 0) {
+			loader();
+		} else {
+			if(callbackFinal) {
+				callbackFinal(files);
+			}
+		}
 	},
 	/**
 	 * Executes parallel requests
 	 * @param {object[]} files - Array of objects with an 'url', an 'id' and a 'type'
-	 * @param {function} callbackFile - Callback on complete per request
-	 * @param {function} callbackFinal - Callback on complete
-	 * @param {function} callbackError - Callback on failure (one failure means the end of the requests)
+	 * @param {function} [callbackFile] - Callback on complete per request
+	 * @param {function} [callbackFinal] - Callback on complete
+	 * @param {function} [callbackError] - Callback on failure (one failure means the end of the requests)
 	 */
 	parallelLoad : function(files, callbackFile, callbackFinal, callbackError) {
 		var loaded = 0;
 		var error = false;
 
-		var iteration = function(file) {
+		var iteration = function(files, i) {
+			var file = files[i];
 			Aural.Utils.XHR.load(
 				file.url,
 				file.type,
@@ -76,10 +86,13 @@ Aural.Utils.XHR = {
 							callbackFile(data, file.id, file.url);
 						}
 
+						files[i].data = data;
+						files[i].error = false;
+
 						loaded++;
 
 						if(loaded === files.length && callbackFinal) {
-							callbackFinal();
+							callbackFinal(files);
 						}
 					}
 				},
@@ -93,16 +106,22 @@ Aural.Utils.XHR = {
 			);
 		};
 
-		for(var i = 0, l = files.length; i < l; i++) {
-			iteration(files[i]);
+		if(files.length > 0) {
+			for(var i = 0, l = files.length; i < l; i++) {
+				iteration(files, i);
+			}
+		} else {
+			if(callbackFinal) {
+				callbackFinal(files);
+			}
 		}
 	},
 	/**
 	 * Execute one request
 	 * @param {string} url - Url
-	 * @param {string} type - Type expected (audio for an AudioBuffer, array for an ArrayBuffer, sfz for a soundfont file, midi for a midi file, mml for a mml file)
-	 * @param {function} callback - Callback on complete
-	 * @param {function} callbackError - Callback on failure
+	 * @param {string} [type] - Type expected (audio for an AudioBuffer, array for an ArrayBuffer, sfz for a soundfont file, midi for a midi file, mml for a mml file, scala for a scala file)
+	 * @param {function} [callback] - Callback on complete
+	 * @param {function} [callbackError] - Callback on failure
 	 */
 	load : function(url, type, callback, callbackError) {
 		var request = new XMLHttpRequest();
@@ -132,6 +151,29 @@ Aural.Utils.XHR = {
 
 					if(callback) {
 						callback(file);
+					}
+				};
+
+				request.onerror = function() {
+					if(callbackError) {
+						callbackError(request);
+					}
+				};
+
+				request.send();
+				break;
+			case 'scala':
+				request.onload = function() {
+					try {
+						var file = new Aural.Utils.Scala.File(request.response);
+
+						if(callback) {
+							callback(file);
+						}
+					} catch(e) {
+						if(callbackError) {
+							callbackError(request);
+						}
 					}
 				};
 
@@ -220,8 +262,8 @@ Aural.Utils.XHR = {
 	/**
 	 * Decode an ArrayBuffer to an AudioBuffer
 	 * @param {ArrayBuffer} arrayBuffer - Buffer
-	 * @param {function} callback - Callback on complete
-	 * @param {function} callbackError - Callback on error
+	 * @param {function} [callback] - Callback on complete
+	 * @param {function} [callbackError] - Callback on error
 	 */
 	decodeAudio : function(arrayBuffer, callback, callbackError) {
 		var ac = Aural.Utils.Support.getAudioContext();
