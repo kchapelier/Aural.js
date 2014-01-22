@@ -109,9 +109,7 @@ Aural.Sound.Wavelet.Collection.prototype.processAudio = function(buffer, maxWave
  */
 Aural.Sound.Wavelet.Collection.prototype.get = function(index) {
 	var position = index % this.wavelets.length;
-	var wavelet = this.wavelets[position];
-
-	return wavelet;
+	return this.wavelets[position];
 };
 
 /**
@@ -151,4 +149,6 @@ Aural.Sound.Wavelet.Collection.prototype.random = function() {
 	
 	this.currentPolarity = wavelet.polarity;
 	this.currentWavelet = position;
+
+	return wavelet;
 };

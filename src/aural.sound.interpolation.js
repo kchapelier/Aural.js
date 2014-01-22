@@ -8,6 +8,10 @@ Aural.Sound.Interpolation = {
 		return this[mode](position, data);
 	},
 	crude : function(position, data) {
+		if(data.length === 0) {
+			return 0;
+		}
+
 		position = Math.round(position) % data.length;
 
 		if(position < 0) {
@@ -17,6 +21,10 @@ Aural.Sound.Interpolation = {
 		return data[position];
 	},
 	linear : function(position, data) {
+		if(data.length === 0) {
+			return 0;
+		}
+
 		var length = data.length,
 			npos = Math.abs(position % length),
 			max = Math.ceil(npos),
@@ -28,6 +36,10 @@ Aural.Sound.Interpolation = {
 		return data[max] * ratio + data[min] * (1 - ratio);
 	},
 	cosine : function(position, data) {
+		if(data.length === 0) {
+			return 0;
+		}
+
 		var length = data.length,
 			npos = Math.abs(position % length),
 			max = Math.ceil(npos),
