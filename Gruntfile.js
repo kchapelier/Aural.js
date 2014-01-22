@@ -65,10 +65,5 @@ module.exports = function(grunt) {
 		'qunit' //run unit tests (note that it is currently crashing due to the lack of webaudio API in phantom.js)
 	]);
 
-	grunt.registerTask('full', [
-		'concat', //concatenate the library in an "use strict" IIFE
-		'uglify', //minify the concatenated file
-		'connect', //create a simple web server for the unit tests
-		'qunit' //run unit tests (note that it is currently crashing due to the lack of webaudio API in phantom.js)
-	]);
+	grunt.registerTask('full', ['test', 'default']);
 };
