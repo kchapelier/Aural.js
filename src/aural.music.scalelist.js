@@ -17,6 +17,7 @@ Aural.Music.ScaleList = {
 	 * @param {Object} intervals - Array of successive intervals
 	 * @param {Aural.Music.Scale} scale - Scale
 	 * @returns {Aural.Music.Scale[]} Matching keyed scales
+	 * @private
 	 */
 	compareIntervals : function(intervals, scale) {
 		var input = intervals.intervals;
@@ -71,6 +72,7 @@ Aural.Music.ScaleList = {
 	 * Normalize a set of notes to successive intervals
 	 * @param {string[]|Number[]|Aural.Music.Note[]} input - Notes
 	 * @returns {Object} Array of successive intervals
+	 * @private
 	 */
 	normalizeInput : function(input) {
 		var i, l;

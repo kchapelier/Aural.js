@@ -2,7 +2,9 @@
 
 /* Outlining the structure of the library */
 
+/** @namespace */
 var Aural = {
+	/** @namespace */
 	Music : {
 		Tuning : null,
 		Note : null,
@@ -14,6 +16,7 @@ var Aural = {
 		IntervalList : null,
 		Phrase : null
 	},
+	/** @namespace */
 	Sound : {
 		BufferMap : null,
 		Interpolation : null,
@@ -22,6 +25,7 @@ var Aural = {
 			Collection : null
 		}
 	},
+	/** @namespace */
 	Utils : {
 		Buffer : null,
 		XHR : null,
@@ -41,6 +45,7 @@ var Aural = {
 			File : null
 		}
 	},
+	/** @namespace */
 	Info : {
 		version : '-',
 		stable : false

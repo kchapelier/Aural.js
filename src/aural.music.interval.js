@@ -1,5 +1,12 @@
 "use strict";
 
+/**
+ * Create an interval
+ * @param {string[]} titles - Array of possible titles
+ * @param {Number} cents - Cents difference
+ * @constructor
+ * @classdesc Interval
+ */
 Aural.Music.Interval = function(titles, cents) {
 	this.titles = titles;
 	this.cents = cents;

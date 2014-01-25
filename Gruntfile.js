@@ -1,6 +1,6 @@
 module.exports = function(grunt) {
 	var testServerPort = 8000;
-	var filesToIgnore = ['src/aural.sound.sample.js', 'src/aural.sound.soundfont.js'];
+	var filesToIgnore = [];
 
 	var appendIgnoredFiles = function(files) {
 		for(var i = 0, l = filesToIgnore.length; i < l; i++) {

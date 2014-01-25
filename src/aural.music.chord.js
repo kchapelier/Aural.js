@@ -1,5 +1,15 @@
 "use strict";
 
+/**
+ * Create a chord
+ * @param {Number[]} intervals - Successive intervals of the chord
+ * @param {string[]} shortnames - Array of possible shortnames
+ * @param {string} name - Name of the chord
+ * @param {string} key - Key (ie: C, D#, Eb2, ...)
+ * @param {Number} octave - Octave (if not already specified in the label)
+ * @constructor
+ * @classdesc Chord
+ */
 Aural.Music.Chord = function(intervals, shortnames, name, key, octave) {
 	this.name = name;
 	this.shortnames = [].concat(shortnames);

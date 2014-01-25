@@ -1,5 +1,13 @@
 "use strict";
 
+/**
+ * Create a scale
+ * @param {string[]} titles - Array of possible titles
+ * @param {Number[]} intervals - Successive intervals of the scale
+ * @param {string} key - Name of the key (ie: C or G#)
+ * @constructor
+ * @classdesc Scale
+ */
 Aural.Music.Scale = function(titles, intervals, key) {
 	this.titles = titles;
 	this.intervals = intervals;

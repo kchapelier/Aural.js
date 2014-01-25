@@ -1,5 +1,12 @@
 "use strict";
 
+/**
+ * Create a musical phrase
+ * @param {Number} duration - Duration
+ * @param {boolean} flexible - Flexibility
+ * @constructor
+ * @classdesc Musical phrase
+ */
 Aural.Music.Phrase = function(duration, flexible) {
 	this.noteEvents = [];
 	this.textEvents = [];

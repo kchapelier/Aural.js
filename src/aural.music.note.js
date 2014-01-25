@@ -1,5 +1,15 @@
 "use strict";
 
+/**
+ * Create a note
+ * @param {string} label - Label of the note (ie : C, D#, G5, F#3, ...)
+ * @param {Number} octave - Octave (if not already specified in the label)
+ * @param {Number} midi - Midi value
+ * @param {Number} cents - Cents
+ * @param {Number} frequency - Frequency in hertz
+ * @constructor
+ * @classdesc Note
+ */
 Aural.Music.Note = function(label, octave, midi, cents, frequency) {
 	if(midi !== null) {
 		this.initializeFromMidi(midi, cents);
