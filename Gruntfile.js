@@ -1,4 +1,6 @@
 module.exports = function(grunt) {
+	var testServerPort = 8000;
+
 	grunt.initConfig({
 		pkg: grunt.file.readJSON('package.json'),
 		concat : {
@@ -31,22 +33,37 @@ module.exports = function(grunt) {
 				}
 			}
 		},
-		connect: {
-			server: {
-				options: {
-					port: 8000,
-					base: '.'
+		connect : {
+			server : {
+				options : {
+					port : testServerPort,
+					base : '.'
 				}
 			}
 		},
-		qunit: {
-			all: {
+		qunit : {
+			source : {
 				options : {
 					timeout : 10000,
-					force : true,
-					urls: ['http://localhost:8000/test/test.html']
+					force : false,
+					urls: ['http://localhost:' + testServerPort + '/test/test.html']
 				}
-			}
+			},
+			minified : {
+				options : {
+					timeout : 10000,
+					force : false,
+					urls: ['http://localhost:' + testServerPort + '/test/test.min.html']
+				}
+			},
+		},
+		jshint : {
+			options : {
+				jshintrc : true,
+				force : true
+			},
+			beforeconcat : ['src/**.js', '!src/aural.js','!src/aural.sound.sample.js', '!src/aural.sound.soundfont.js'],
+			afterconcat : ['build/aural.js']
 		}
 	});
 
@@ -54,16 +71,29 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-contrib-uglify');
 	grunt.loadNpmTasks('grunt-contrib-connect');
 	grunt.loadNpmTasks('grunt-contrib-qunit');
+	grunt.loadNpmTasks('grunt-contrib-jshint');
 
 	grunt.registerTask('default', [
+		'jshint:beforeconcat', //validates the source files with jshint
 		'concat', //concatenate the library in an "use strict" IIFE
+		'jshint:afterconcat', //validates the minified files with jshint
 		'uglify' //minify the concatenated file
 	]);
 
-	grunt.registerTask('test', [
+	grunt.registerTask('testminified', [
 		'connect', //create a simple web server for the unit tests
-		'qunit' //run unit tests (note that it is currently crashing due to the lack of webaudio API in phantom.js)
+		'qunit:minified' //run unit tests on the minified file
 	]);
 
-	grunt.registerTask('full', ['test', 'default']);
+	grunt.registerTask('testsource', [
+		'connect', //create a simple web server for the unit tests
+		'qunit:source' //run unit tests on the source files (note that it is currently crashing due to the lack of webaudio API in phantom.js)
+	]);
+
+	grunt.registerTask('full', [
+		'connect', //create a simple web server for the unit tests
+		//'qunit:source', //run unit tests on the source files (note that it is currently crashing due to the lack of webaudio API in phantom.js)
+		'default', //validates, concatenates and minify
+		'qunit:minified' //run unit tests on the minified file
+	]);
 };
