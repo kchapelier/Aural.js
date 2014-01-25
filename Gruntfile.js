@@ -1,5 +1,14 @@
 module.exports = function(grunt) {
 	var testServerPort = 8000;
+	var filesToIgnore = ['src/aural.sound.sample.js', 'src/aural.sound.soundfont.js'];
+
+	var appendIgnoredFiles = function(files) {
+		for(var i = 0, l = filesToIgnore.length; i < l; i++) {
+			files.push('!' + filesToIgnore[i]);
+		}
+		
+		return files;
+	};
 
 	grunt.initConfig({
 		pkg: grunt.file.readJSON('package.json'),
@@ -19,10 +28,7 @@ module.exports = function(grunt) {
 				footer : '\n\n\treturn Aural;\n})();'
 			},
 			dist : {
-				src : [
-					'src/**.js', '!src/**.definitions.js', 'src/**.definitions.js',
-					'!src/aural.sound.sample.js', '!src/aural.sound.soundfont.js' //ignore messy pseudo code files
-				],
+				src : appendIgnoredFiles(['src/**.js', '!src/**.definitions.js', 'src/**.definitions.js']),
 				dest : 'build/aural.js'
 			}
 		},
@@ -39,7 +45,7 @@ module.exports = function(grunt) {
 					port : testServerPort,
 					base : '.'
 				}
-			}
+			},
 		},
 		qunit : {
 			source : {
@@ -62,9 +68,18 @@ module.exports = function(grunt) {
 				jshintrc : true,
 				force : true
 			},
-			beforeconcat : ['src/**.js', '!src/aural.js','!src/aural.sound.sample.js', '!src/aural.sound.soundfont.js'],
-			afterconcat : ['build/aural.js']
-		}
+			source : appendIgnoredFiles(['src/**.js', '!src/aural.js']),
+			concatenated : ['build/aural.js']
+		},
+		jsdoc : {
+			dist : {
+				src: appendIgnoredFiles(['src/**.js']),
+				options: {
+					destination: 'doc/html'
+				}
+			}
+		},
+		clean : ['build', 'doc/html']
 	});
 
 	grunt.loadNpmTasks('grunt-contrib-concat');
@@ -72,13 +87,17 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-contrib-connect');
 	grunt.loadNpmTasks('grunt-contrib-qunit');
 	grunt.loadNpmTasks('grunt-contrib-jshint');
+	grunt.loadNpmTasks('grunt-jsdoc');
+	grunt.loadNpmTasks('grunt-contrib-clean');
 
 	grunt.registerTask('default', [
-		'jshint:beforeconcat', //validates the source files with jshint
+		'jshint:source', //validates the source files with jshint
 		'concat', //concatenate the library in an "use strict" IIFE
-		'jshint:afterconcat', //validates the minified files with jshint
+		'jshint:concatenated', //validates the minified files with jshint
 		'uglify' //minify the concatenated file
 	]);
+
+	grunt.registerTask('serve', ['connect:server:keepalive']);
 
 	grunt.registerTask('testminified', [
 		'connect', //create a simple web server for the unit tests
@@ -91,6 +110,8 @@ module.exports = function(grunt) {
 	]);
 
 	grunt.registerTask('full', [
+		'clean', //remove the doc/html/ and build/ folders
+		'jsdoc', //generate the documentation
 		'connect', //create a simple web server for the unit tests
 		//'qunit:source', //run unit tests on the source files (note that it is currently crashing due to the lack of webaudio API in phantom.js)
 		'default', //validates, concatenates and minify
