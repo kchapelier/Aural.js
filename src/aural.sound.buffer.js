@@ -3,6 +3,10 @@
 Aural.Sound.Buffer = function(buffer, sampleRate) {
 	this.channels = [];
 
+	if(typeof buffer === 'function') {
+		buffer = buffer();
+	}
+
 	var type = {}.toString.call(buffer);
 
 	if(type === '[object AudioBuffer]') {
@@ -15,10 +19,12 @@ Aural.Sound.Buffer = function(buffer, sampleRate) {
 		this.channels[0] = buffer;
 	} else if(type === '[object Array]') {
 		this.channels[0] = new Float32Array(buffer);
+	} else {
+		this.channels[0] = new Float32Array(0);
 	}
 
 	this.sampleRate = sampleRate || 48000;
-	this.length = buffer.length;
+	this.length = this.channels[0].length;
 	this.duration = this.length / this.sampleRate;
 	this.numberOfChannels = this.channels.length;
 };
@@ -29,6 +35,7 @@ Aural.Sound.Buffer.prototype.duration = null;
 Aural.Sound.Buffer.prototype.numberOfChannels = null;
 
 Aural.Sound.Buffer.prototype.getSample = function(sample, channel) {
+	channel = channel || 0;
 	return !!this.channels[channel] ? Aural.Sound.Interpolation.process(sample, this.channels[channel]) : 0;
 };
 
@@ -46,9 +53,10 @@ Aural.Sound.Buffer.prototype.makeMono = function(merge) {
 		var monoChannel = [];
 		
 		if(count > 0) {
-			for(var i = 0; i < count; i++) {
-				var channel = this.getChannelData(i);
-				for(var i2 = 0, l = channel.length; i2 < l; i2++) {
+			var i, i2, l, channel;
+			for(i = 0; i < count; i++) {
+				channel = this.getChannelData(i);
+				for(i2 = 0, l = channel.length; i2 < l; i2++) {
 					if(monoChannel.length > i2) {
 						monoChannel[i2]+=channel[i2];
 					} else {
@@ -57,7 +65,7 @@ Aural.Sound.Buffer.prototype.makeMono = function(merge) {
 				}
 			}
 			
-			for(var i = 0, l = monoChannel.length; i < l; i++) {
+			for(i = 0, l = monoChannel.length; i < l; i++) {
 				monoChannel[i] /= count;
 			}
 		}
