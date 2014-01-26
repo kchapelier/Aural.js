@@ -19,6 +19,11 @@ var Aural = {
 	/** @namespace */
 	Sound : {
 		BufferMap : null,
+		Enveloppe : {
+			Fixed : null,
+			ADSR : null,
+			DAHDSR : null
+		},
 		Interpolation : null,
 		Wavelet : {
 			Wavelet : null,
