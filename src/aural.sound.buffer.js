@@ -34,19 +34,39 @@ Aural.Sound.Buffer.prototype.sampleRate = null;
 Aural.Sound.Buffer.prototype.duration = null;
 Aural.Sound.Buffer.prototype.numberOfChannels = null;
 
+/**
+ * Get one sample of a channel
+ * @param {Number} sample - Position in the buffer
+ * @param {Number} channel - Number of the channel
+ * @returns {Number} Sample
+ */
 Aural.Sound.Buffer.prototype.getSample = function(sample, channel) {
 	channel = channel || 0;
 	return !!this.channels[channel] ? Aural.Sound.Interpolation.process(sample, this.channels[channel]) : 0;
 };
 
+/**
+ * Get all the samples for a channel
+ * @param {Number} channel - Number of the channel
+ * @returns {Number[]} Array of samples (Float32Array)
+ */
 Aural.Sound.Buffer.prototype.getChannelData = function(channel) {
 	return !!this.channels[channel] ? this.channels[channel] : new Float32Array(0);
 };
 
+/**
+ * Return a wavelet collection for a channel
+ * @param {Number} channel - Number of the channel
+ * @returns {Aural.Sound.Wavelet.Collection} Wavelet collection
+ */
 Aural.Sound.Buffer.prototype.getWavelets = function(channel) {
 	return !!this.channels[channel] ? new Aural.Sound.Wavelet.Collection(this.channels[channel]) : null;
 };
 
+/**
+ * Make the buffer mono (force it to a single channel, removing channels where necessary)
+ * @param {boolean} merge - Whether to sum all the channels
+ */
 Aural.Sound.Buffer.prototype.makeMono = function(merge) {
 	if(merge) {
 		var count = this.channels.length;
@@ -80,6 +100,9 @@ Aural.Sound.Buffer.prototype.makeMono = function(merge) {
 	this.numberOfChannels = this.channels.length;
 };
 
+/**
+ * Make the buffer stereo (force it to two channels, copying and removing channels where necessary)
+ */
 Aural.Sound.Buffer.prototype.makeStereo = function() {
 	if(this.channels.length === 1) {
 		this.channels.push(this.getChannelData(0));

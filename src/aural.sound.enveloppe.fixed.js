@@ -5,6 +5,9 @@ Aural.Sound.Enveloppe.Fixed = function(shape, length) {
 	this.setLength(length);
 };
 
+/**
+ * Calculate the shape of the enveloppe
+ */
 Aural.Sound.Enveloppe.Fixed.prototype.process = function() {
 	var i, l, l2;
 	var processedShape = new Float32Array(this.length);
@@ -20,8 +23,7 @@ Aural.Sound.Enveloppe.Fixed.prototype.process = function() {
 		case '[object String]':
 			var splittedShape = this.shape.split(':');
 			var func = splittedShape[0].toLowerCase();
-			var order = !!splittedShape[1] ? parseInt(splittedShape[1]) : 0;
-			console.log(func, order);
+			var order = !!splittedShape[1] ? parseInt(splittedShape[1], 10) : 0;
 			
 			if(!!Aural.Sound.Enveloppe.Fixed.List[func]) {
 				for(i = 0, l = this.length; i < l; i++) {
@@ -40,11 +42,20 @@ Aural.Sound.Enveloppe.Fixed.prototype.process = function() {
 	this.processedShape = processedShape;
 };
 
+/**
+ * Modify the length of the enveloppe
+ * @param {Number} length - Length
+ */
 Aural.Sound.Enveloppe.Fixed.prototype.setLength = function(length) {
 	this.length = length > 0 ? length : 1;
 	this.process();
 };
 
+/**
+ * Get the amplitude of the enveloppe at a specified sample
+ * @param {Number} sample - Position in the enveloppe
+ * @returns {Number} Amplitude
+ */
 Aural.Sound.Enveloppe.Fixed.prototype.getAmplitude = function(sample) {
 	if(sample < 0 || sample > this.length - 1) {
 		return 0;
@@ -58,15 +69,21 @@ Aural.Sound.Enveloppe.Fixed.List = {
 		//most likely incorrect
 		return 2.5 * (1 / Math.sqrt(2 * Math.PI)) * Math.pow(Math.E, (-1 * Math.pow((i - l / 2)* l, 2) / (2 * Math.pow(l * l / 500 * 80, 2))));
 	},
+	'gaussian2' : function(i, l, order) {
+		order = Math.max(3, order ? order : 3);
+		order = 1 / order;
+		var r = Math.pow((i - (l - 1) / 2) / ((l - 1) / 2 * order), 2) / -2;
+		return Math.pow(Math.E, r);
+	},
 	'tukeywindow' : function(i, l, order) {
 		order = Math.max(1, order ? Math.floor(order) : 2);
-		order = length / (order ? order : 2);
+		order = l / (order ? order : 2);
 		//Tukey Window
 		return (
 			i < order / 2 ?
 				(1 + Math.cos(2 * Math.PI / order * (i - order / 2))) / 2
 			: (
-				i < length - order / 2 ?
+				i < l - order / 2 ?
 				1
 				:
 				(1 + Math.cos(2 * Math.PI / order * (i - 1 + order / 2))) / 2
@@ -124,6 +141,16 @@ Aural.Sound.Enveloppe.Fixed.List = {
 	'expopuls' : function(i, l, order) {
 		order = Math.max(0, order ? Math.floor(order) : 0);
 		return Math.abs(Math.pow(i < l / 2 ? i / l * 2 : (i - l) / l * 2, order));
+	},
+	'welchwindow' : function(i, l) {
+		return 1 - Math.pow((i - (l-1)/2) / ((l+1) / 2), 2);
+	},
+	'hannwindow' : function(i, l) {
+		return (1 - Math.cos(2 * Math.PI * i / (l - 1))) / 2;
+	},
+	'linearpulse' : function(i, l, order) {
+		var r = i / order;
+		return (r >=1 ? 0 : Aural.Sound.Interpolation.linear(r, [1, 0]));
 	}
 };
 
