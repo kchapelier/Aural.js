@@ -113,7 +113,7 @@ module.exports = function(grunt) {
 		'clean', //remove the doc/html/ and build/ folders
 		'jsdoc', //generate the documentation
 		'connect', //create a simple web server for the unit tests
-		//'qunit:source', //run unit tests on the source files (note that it is currently crashing due to the lack of webaudio API in phantom.js)
+		'qunit:source', //run unit tests on the source files (note that it is currently crashing due to the lack of webaudio API in phantom.js)
 		'default', //validates, concatenates and minify
 		'qunit:minified' //run unit tests on the minified file
 	]);
