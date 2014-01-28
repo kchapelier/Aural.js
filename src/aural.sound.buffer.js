@@ -15,7 +15,7 @@ Aural.Sound.Buffer = function(buffer, sampleRate) {
 		for(var i = 0; i < nbChannels; i++) {
 			this.channels[i] = buffer.getChannelData(i);
 		}
-	} else if(type === '[object ArrayBuffer]') {
+	} else if(type === '[object ArrayBuffer]' || type === '[object Float32Array]') {
 		this.channels[0] = buffer;
 	} else if(type === '[object Array]') {
 		this.channels[0] = new Float32Array(buffer);

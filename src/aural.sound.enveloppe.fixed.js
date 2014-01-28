@@ -13,11 +13,13 @@ Aural.Sound.Enveloppe.Fixed.prototype.process = function() {
 	var processedShape = new Float32Array(this.length);
 	
 	var type = ({}).toString.call(this.shape);
+	var maxValue = 0;
 	
 	switch(type) {
 		case '[object Function]':
 			for(i = 0, l = this.length; i < l; i++) {
 				processedShape[i] = this.shape(i, l);
+				maxValue = Math.max(Math.abs(processedShape[i]), maxValue);
 			}
 			break;
 		case '[object String]':
@@ -28,6 +30,7 @@ Aural.Sound.Enveloppe.Fixed.prototype.process = function() {
 			if(!!Aural.Sound.Enveloppe.Fixed.List[func]) {
 				for(i = 0, l = this.length; i < l; i++) {
 					processedShape[i] = Aural.Sound.Enveloppe.Fixed.List[func](i, l, order);
+					maxValue = Math.max(Math.abs(processedShape[i]), maxValue);
 				}
 			} else {
 				throw "unknown fixed enveloppe";
@@ -36,9 +39,11 @@ Aural.Sound.Enveloppe.Fixed.prototype.process = function() {
 		default:
 			for(i = 0, l = this.length, l2 = this.shape.length; i < l; i++) {
 				processedShape[i] = Aural.Sound.Interpolation.linear(i * l2 / l, this.shape);
+				maxValue = Math.max(Math.abs(processedShape[i]), maxValue);
 			}
 	}
 	
+	this.normalizationRatio = 1 / maxValue;
 	this.processedShape = processedShape;
 };
 
@@ -54,26 +59,26 @@ Aural.Sound.Enveloppe.Fixed.prototype.setLength = function(length) {
 /**
  * Get the amplitude of the enveloppe at a specified sample
  * @param {Number} sample - Position in the enveloppe
+ * @param {Number} normalized - Whether to return a normalized sample
  * @returns {Number} Amplitude
  */
-Aural.Sound.Enveloppe.Fixed.prototype.getAmplitude = function(sample) {
+Aural.Sound.Enveloppe.Fixed.prototype.getAmplitude = function(sample, normalized) {
 	if(sample < 0 || sample > this.length - 1) {
 		return 0;
 	}
 	
-	return Aural.Sound.Interpolation.linear(sample, this.processedShape);
+	return Aural.Sound.Interpolation.linear(sample, this.processedShape) * (normalized ? this.normalizationRatio : 1);
 };
 
 Aural.Sound.Enveloppe.Fixed.List = {
-	'gaussian' : function(i, l) {
-		//most likely incorrect
-		return 2.5 * (1 / Math.sqrt(2 * Math.PI)) * Math.pow(Math.E, (-1 * Math.pow((i - l / 2)* l, 2) / (2 * Math.pow(l * l / 500 * 80, 2))));
-	},
-	'gaussian2' : function(i, l, order) {
+	'gaussian' : function(i, l, order) {
 		order = Math.max(3, order ? order : 3);
 		order = 1 / order;
 		var r = Math.pow((i - (l - 1) / 2) / ((l - 1) / 2 * order), 2) / -2;
 		return Math.pow(Math.E, r);
+	},
+	'gaussian2' : function(i, l) {
+		return 2.5 * (1 / Math.sqrt(2 * Math.PI)) * Math.pow(Math.E, (-1 * Math.pow((i - l / 2)* l, 2) / (2 * Math.pow(l * l / 500 * 80, 2))));
 	},
 	'tukeywindow' : function(i, l, order) {
 		order = Math.max(1, order ? Math.floor(order) : 2);
@@ -131,15 +136,15 @@ Aural.Sound.Enveloppe.Fixed.List = {
 		return (Math.exp(i / l) - 1) / (Math.E - 1);
 	},
 	'expodec' : function(i, l, order) {
-		order = Math.max(0, order ? Math.floor(order) : 0);
+		order = Math.max(2, order ? Math.floor(order) : 2);
 		return (Math.pow(1 - i / l, order));
 	},
 	'rexpodec' : function(i, l, order) {
-		order = Math.max(0, order ? Math.floor(order) : 0);
+		order = Math.max(2, order ? Math.floor(order) : 2);
 		return (Math.pow(i / l, order));
 	},
 	'expopuls' : function(i, l, order) {
-		order = Math.max(0, order ? Math.floor(order) : 0);
+		order = Math.max(2, order ? Math.floor(order) : 2);
 		return Math.abs(Math.pow(i < l / 2 ? i / l * 2 : (i - l) / l * 2, order));
 	},
 	'welchwindow' : function(i, l) {

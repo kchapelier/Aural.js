@@ -24,6 +24,9 @@ var Aural = {
 			ADSR : null,
 			DAHDSR : null
 		},
+		Granular : {
+			Collection : null
+		},
 		Interpolation : null,
 		Wavelet : {
 			Wavelet : null,
