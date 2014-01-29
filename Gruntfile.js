@@ -97,23 +97,19 @@ module.exports = function(grunt) {
 		'uglify' //minify the concatenated file
 	]);
 
+	grunt.registerTask('validate', [
+		'jshint:source', //validates the source files with jshint
+		'connect', //create a simple web server for the unit tests
+		'qunit:source' //run unit tests on the source files
+	]);
+
 	grunt.registerTask('serve', ['connect:server:keepalive']);
-
-	grunt.registerTask('testminified', [
-		'connect', //create a simple web server for the unit tests
-		'qunit:minified' //run unit tests on the minified file
-	]);
-
-	grunt.registerTask('testsource', [
-		'connect', //create a simple web server for the unit tests
-		'qunit:source' //run unit tests on the source files (note that it is currently crashing due to the lack of webaudio API in phantom.js)
-	]);
 
 	grunt.registerTask('full', [
 		'clean', //remove the doc/html/ and build/ folders
 		'jsdoc', //generate the documentation
 		'connect', //create a simple web server for the unit tests
-		'qunit:source', //run unit tests on the source files (note that it is currently crashing due to the lack of webaudio API in phantom.js)
+		'qunit:source', //run unit tests on the source files
 		'default', //validates, concatenates and minify
 		'qunit:minified' //run unit tests on the minified file
 	]);

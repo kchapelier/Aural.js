@@ -1,15 +1,22 @@
 "use strict";
 
-Aural.Sound.Enveloppe.Fixed = function(shape, length) {
+Aural.Sound.Enveloppe.Fixed = function(shape, length, resolution) {
+	this.resolution = resolution > 0 ? resolution : 1;
 	this.shape = shape;
 	this.setLength(length);
 };
+
+Aural.Sound.Enveloppe.Fixed.prototype.length = null;
+Aural.Sound.Enveloppe.Fixed.prototype.resolution = null;
+Aural.Sound.Enveloppe.Fixed.prototype.shape = null;
+Aural.Sound.Enveloppe.Fixed.prototype.processedShape = null;
 
 /**
  * Calculate the shape of the enveloppe
  */
 Aural.Sound.Enveloppe.Fixed.prototype.process = function() {
 	var i, l, l2;
+	var realLength = this.length * this.resolution;
 	var processedShape = new Float32Array(this.length);
 	
 	var type = ({}).toString.call(this.shape);
@@ -17,7 +24,7 @@ Aural.Sound.Enveloppe.Fixed.prototype.process = function() {
 	
 	switch(type) {
 		case '[object Function]':
-			for(i = 0, l = this.length; i < l; i++) {
+			for(i = 0, l = realLength; i < l; i++) {
 				processedShape[i] = this.shape(i, l);
 				maxValue = Math.max(Math.abs(processedShape[i]), maxValue);
 			}
@@ -28,7 +35,7 @@ Aural.Sound.Enveloppe.Fixed.prototype.process = function() {
 			var order = !!splittedShape[1] ? parseInt(splittedShape[1], 10) : 0;
 			
 			if(!!Aural.Sound.Enveloppe.Fixed.List[func]) {
-				for(i = 0, l = this.length; i < l; i++) {
+				for(i = 0, l = realLength; i < l; i++) {
 					processedShape[i] = Aural.Sound.Enveloppe.Fixed.List[func](i, l, order);
 					maxValue = Math.max(Math.abs(processedShape[i]), maxValue);
 				}
@@ -37,14 +44,23 @@ Aural.Sound.Enveloppe.Fixed.prototype.process = function() {
 			}
 			break;
 		default:
-			for(i = 0, l = this.length, l2 = this.shape.length; i < l; i++) {
+			for(i = 0, l = realLength, l2 = this.shape.length; i < l; i++) {
 				processedShape[i] = Aural.Sound.Interpolation.linear(i * l2 / l, this.shape);
 				maxValue = Math.max(Math.abs(processedShape[i]), maxValue);
 			}
 	}
 	
-	this.normalizationRatio = 1 / maxValue;
+	this.normalizationRatio = maxValue > 0 ? 1 / maxValue : 1;
 	this.processedShape = processedShape;
+};
+
+/**
+ * Modify the resolution of the enveloppe
+ * @param {Number} resolution - Resolution
+ */
+Aural.Sound.Enveloppe.Fixed.prototype.setResolution = function(resolution) {
+	this.resolution = resolution > 0 ? resolution : 1;
+	this.process();
 };
 
 /**
@@ -63,11 +79,13 @@ Aural.Sound.Enveloppe.Fixed.prototype.setLength = function(length) {
  * @returns {Number} Amplitude
  */
 Aural.Sound.Enveloppe.Fixed.prototype.getAmplitude = function(sample, normalized) {
-	if(sample < 0 || sample > this.length - 1) {
+	var realSample = sample * this.resolution;
+	
+	if(realSample < 0 || realSample > this.length - 1) {
 		return 0;
 	}
 	
-	return Aural.Sound.Interpolation.linear(sample, this.processedShape) * (normalized ? this.normalizationRatio : 1);
+	return Aural.Sound.Interpolation.linear(realSample, this.processedShape) * (normalized ? this.normalizationRatio : 1);
 };
 
 Aural.Sound.Enveloppe.Fixed.List = {
@@ -96,10 +114,10 @@ Aural.Sound.Enveloppe.Fixed.List = {
 		);
 	},
 	'rampup' : function(i, l) {
-		return (i % l / l);
+		return l === 1 ? 1 : (i % l / (l - 1));
 	},
 	'rampdown' : function(i, l) {
-		return ((l - i) % l / l);
+		return l === 1 ? 1 : ((l - i - 1) % (l) / (l - 1));
 	},
 	'sinc' : function(i, l, order) {
 		order = Math.max(1, order ? Math.floor(order) : 1);
