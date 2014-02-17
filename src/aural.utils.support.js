@@ -57,3 +57,19 @@ Aural.Utils.Support.isArrayBufferAndTypedArraySupported = function() {
 
 	return supported;
 };
+
+/**
+ * Return the sample rate
+ * @returns {number| Sample rate
+ */
+Aural.Utils.Support.getSampleRate = function() {
+	return this.getAudioContext().sampleRate;
+};
+
+/**
+ * Return the nyquist frequency
+ * @returns {number} Nyquist frequency
+ */
+Aural.Utils.Support.getNyquistFrenquency = function() {
+	return this.getAudioContext().sampleRate / 2;
+};

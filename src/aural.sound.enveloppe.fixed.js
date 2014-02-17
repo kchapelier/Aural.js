@@ -36,7 +36,7 @@ Aural.Sound.Enveloppe.Fixed.prototype.process = function() {
 			
 			if(!!Aural.Sound.Enveloppe.Fixed.List[func]) {
 				for(i = 0, l = realLength; i < l; i++) {
-					processedShape[i] = Aural.Sound.Enveloppe.Fixed.List[func](i, l, order);
+					processedShape[i] = Aural.Sound.Enveloppe.Fixed.List[func](i, l, order, this.length);
 					maxValue = Math.max(Math.abs(processedShape[i]), maxValue);
 				}
 			} else {
@@ -112,6 +112,42 @@ Aural.Sound.Enveloppe.Fixed.List = {
 				(1 + Math.cos(2 * Math.PI / order * (i - 1 + order / 2))) / 2
 			)
 		);
+	},
+	'rectangularantialiased' : function(i, l, order, length) {
+		order = order || Math.max(1, Math.floor(length / 48));
+
+		var val = 0;
+		for(var n = 1; n <= order; n = n + 2) {
+			val+= Math.sin(i * n * Math.PI / l) / n;
+		}
+		return val;
+	},
+	'triangularantialiased' : function(i, l, order, length) {
+		order = order || Math.max(1, Math.floor(length / 48));
+
+		var val = 0;
+		for(var n = 1; n <= order; n+=2) {
+			val+= Math.sin((l - i) * n * Math.PI / l) * (Math.pow(-1, (n-1) / 2) / (n * n));
+		}
+		return val * 8 / (Math.PI * Math.PI);
+	},
+	'rampupantialiased' : function(i, l, order, length) {
+		order = order || Math.max(1, Math.floor(length / 48));
+
+		var val = 0;
+		for(var n = 1; n <= order; n++) {
+			val+= Math.sin((l - i) * n * Math.PI / l) / n;
+		}
+		return val * 2 / Math.PI;
+	},
+	'rampdownantialiased' : function(i, l, order, length) {
+		order = order || Math.max(1, Math.floor(length / 48));
+		
+		var val = 0;
+		for(var n = 1; n <= order; n++) {
+			val+= Math.sin(i * n * Math.PI / l) / n;
+		}
+		return val * 2 / Math.PI;
 	},
 	'rampup' : function(i, l) {
 		return l === 1 ? 1 : (i % l / (l - 1));
