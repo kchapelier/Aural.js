@@ -23,7 +23,7 @@ Aural.Sound.Buffer = function(buffer, sampleRate) {
 		this.channels[0] = new Float32Array(0);
 	}
 
-	this.sampleRate = sampleRate || 48000;
+	this.sampleRate = sampleRate || Aural.Utils.Support.getSampleRate();
 	this.length = this.channels[0].length;
 	this.duration = this.length / this.sampleRate;
 	this.numberOfChannels = this.channels.length;
