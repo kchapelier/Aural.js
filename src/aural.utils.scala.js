@@ -2,6 +2,7 @@
 
 Aural.Utils.Scala.File = function(content) {
 	this.description = '';
+	this.numberIntervals = 0;
 	this.intervals = [];
 	
 	if(content) {
@@ -19,7 +20,7 @@ Aural.Utils.Scala.File.prototype.description = null;
  * Number of intervals as defined in the file
  * @type {Number}
  */
-Aural.Utils.Scala.File.prototype.numberValues = null;
+Aural.Utils.Scala.File.prototype.numberIntervals = null;
 
 /**
  * Array of intervals
@@ -33,15 +34,15 @@ Aural.Utils.Scala.File.prototype.intervals = null;
  * @private
  */
 Aural.Utils.Scala.File.prototype.parse = function(contentFile) {
-	contentFile+= "\r\n";
-	var lines = contentFile.match(/^.*[\n\r]+|$/gm);
-	var countLines = 0;
+	var lines = (contentFile + "\r\n").match(/^.*[\n\r]+|$/gm),
+		countLines = 0,
+		line,
+		interval,
+		parsedInterval;
 	
 	this.intervals = [];
 
-	var line, interval, parsedInterval;
-
-	for(var x = 0, l = lines.length; x < l; x++) {
+	for(var x = 0; x < lines.length; x++) {
 		line = lines[x];
 		
 		if(line.indexOf('!') !== 0) { //exclude comment lines
@@ -49,8 +50,8 @@ Aural.Utils.Scala.File.prototype.parse = function(contentFile) {
 				case 0: //first non-commented line is description
 					this.description = line.trim();
 					break;
-				case 1: //second non-commented line is description
-					this.numberValues = parseInt(line, 10);
+				case 1: //second non-commented line is the number of intervals
+					this.numberIntervals = parseInt(line, 10);
 					break;
 				default: //every other non-commented lines are interval values
 					interval = line.trim();
@@ -69,7 +70,7 @@ Aural.Utils.Scala.File.prototype.parse = function(contentFile) {
 		}
 	}
 	
-	if(this.intervals.length !== this.numberValues) {
+	if(this.intervals.length !== this.numberIntervals) {
 		throw 'Error in file format : incorrect number of valid intervals';
 	}
 };
@@ -81,16 +82,14 @@ Aural.Utils.Scala.File.prototype.parse = function(contentFile) {
  * @private
  */
 Aural.Utils.Scala.File.prototype.treatInterval = function(interval) {
-	interval = interval.split(' ')[0];
+	var isCent = false,
+		convertedInterval;
 
-	var convertedInterval;
-	var isCent = false;
+	interval = interval.split(' ')[0];
 	
 	if(interval.indexOf('/') > 0) { //ratio notation
 		var division = interval.split('/');
-		var div1 = parseFloat(division[0]);
-		var div2 = parseFloat(division[1]);
-		convertedInterval = div1 / div2;
+		convertedInterval = parseFloat(division[0]) / parseFloat(division[1]);
 	} else {
 		if(interval.indexOf('.') > 0) { //cent notation
 			convertedInterval = parseFloat(interval);
@@ -101,8 +100,8 @@ Aural.Utils.Scala.File.prototype.treatInterval = function(interval) {
 	}
 
 	if(!isCent) {
-		if(convertedInterval <= 0) {
-			throw 'Error in file format : negative or zero ratio as interval';
+		if(convertedInterval < 0) {
+			throw 'Error in file format : negative ratio as interval';
 		}
 
 		convertedInterval = 1200 * Math.log(convertedInterval) / Math.log(2);

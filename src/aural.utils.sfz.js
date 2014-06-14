@@ -38,7 +38,7 @@ Aural.Utils.Sfz.Region.prototype.switchUp = 0;
 Aural.Utils.Sfz.Region.prototype.switchPrevious = null;
 
 /**
- * Set several properties of the regions
+ * Set several properties of the region
  * @param {Object} properties - Object containing the options
  */
 Aural.Utils.Sfz.Region.prototype.setProperties = function(properties) {
@@ -135,6 +135,7 @@ Aural.Utils.Sfz.Region.prototype.setProperty = function(property, value) {
 
 /**
  * Check if the region must be triggered by an incoming event
+ * @param {Number} channel - Channel number
  * @param {Number} key - Midi value
  * @param {Number} cents - Cents
  * @param {Number} velocity - Velocity
@@ -142,15 +143,16 @@ Aural.Utils.Sfz.Region.prototype.setProperty = function(property, value) {
  * @param {Number} rand - Random value for round robin
  * @return {boolean} Return whether the region must be triggered
  */
-Aural.Utils.Sfz.Region.prototype.matchNote = function(key, cents, velocity, bpm, rand) {
+Aural.Utils.Sfz.Region.prototype.matchNote = function(channel, key, cents, velocity, bpm, rand) {
 	this.innerSequence++;
 	
 	if(this.innerSequence > this.sequenceLength) {
 		this.innerSequence = 1;
 	}
-	
+
 	return (
-		key >= this.loKey && key <= this.hiKey &&
+		channel >= this.loChannel && channel <= this.hiChannel && //channel check
+		key >= this.loKey && key <= this.hiKey && //midi value check
 		velocity >= this.loVelocity && velocity <= this.hiVelocity && //velocity layer
 		this.innerSequence === this.sequencePosition && rand >= this.loRand && rand <= this.hiRand && //round robin
 		bpm >= this.loBpm && bpm <= this.hiBpm

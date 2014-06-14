@@ -24,7 +24,7 @@ test('1/4-comma meantone scale', function() {
 	var file = new Aural.Utils.Scala.File(scala);
 	
 	equal(file.description, '1/4-comma meantone scale. Pietro Aaron\'s temperament (1523)');
-	equal(file.numberValues, 12);
+	equal(file.numberIntervals, 12);
 	equal(file.intervals.length, 12);
 
 	var expectedIntervals = [
@@ -71,7 +71,7 @@ test('12-tone Pythagorean scale', function() {
 	var file = new Aural.Utils.Scala.File(scala);
 
 	equal(file.description, '12-tone Pythagorean scale');
-	equal(file.numberValues, 12);
+	equal(file.numberIntervals, 12);
 	equal(file.intervals.length, 12);
 
 	var expectedIntervals = [
@@ -119,7 +119,7 @@ test('Siamese Tuning', function() {
 	var file = new Aural.Utils.Scala.File(scala);
 
 	equal(file.description, 'Siamese Tuning, after Clem Fortuna\'s Microtonal Guide');
-	equal(file.numberValues, 12);
+	equal(file.numberIntervals, 12);
 	equal(file.intervals.length, 12);
 
 	var expectedIntervals = [
