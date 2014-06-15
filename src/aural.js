@@ -21,7 +21,6 @@ var Aural = {
 		BufferMap : null,
 		Enveloppe : {
 			Fixed : null,
-			ADSR : null,
 			DAHDSR : null
 		},
 		Granular : {
