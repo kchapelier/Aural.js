@@ -1,7 +1,24 @@
 "use strict";
 
-Aural.Sound.Enveloppe.DAHDSR = function() {
+//TODO implement setProperties and usual options
+//TODO implement all log/expBias
+//TODO rename processedShapes to be more generic
+
+Aural.Sound.Enveloppe.DAHDSR = function(options) {
+
+	if(options) {
+		this.setProperties(options);
+	}
+
 	this.process();
+};
+
+Aural.Sound.Enveloppe.DAHDSR.prototype.setProperties = function(properties) {
+	for(var key in properties) {
+		if(properties.hasOwnProperty(key)) {
+			this.setProperty(key, properties[key]);
+		}
+	}
 };
 
 Aural.Sound.Enveloppe.DAHDSR.prototype.delay = 0;
@@ -14,6 +31,13 @@ Aural.Sound.Enveloppe.DAHDSR.prototype.sustain = 1;
 Aural.Sound.Enveloppe.DAHDSR.prototype.release = 0;
 Aural.Sound.Enveloppe.DAHDSR.prototype.releaseLogBias = 0;
 Aural.Sound.Enveloppe.DAHDSR.prototype.inverted = false;
+
+Aural.Sound.Enveloppe.DAHDSR.prototype.processedShapeDAHD = null;
+Aural.Sound.Enveloppe.DAHDSR.prototype.processedShapeR = null;
+
+Aural.Sound.Enveloppe.DAHDSR.prototype.setProperty = function(property, value) {
+
+};
 
 Aural.Sound.Enveloppe.DAHDSR.prototype.setDelay = function(delay) {
 	this.delay = Math.max(0, delay);
@@ -60,19 +84,31 @@ Aural.Sound.Enveloppe.DAHDSR.prototype.setReleaseLogBias = function(releaseLogBi
 	this.processR();
 };
 
+Aural.Sound.Enveloppe.DAHDSR.prototype.setInverted = function(inverted) {
+	this.inverted = !!inverted;
+};
+
 Aural.Sound.Enveloppe.DAHDSR.prototype.getAmplitude = function(sample, releaseSample, normalized) {
 	var amplitude;
 
-	if(releaseSample && sample > releaseSample) {
-		var base = this.getAmplitude(releaseSample, null, normalized);
+	if(releaseSample && sample >= releaseSample) {
 		sample = sample - releaseSample;
 
-		amplitude = base * Aural.Sound.Interpolation.linear(sample, this.processedShapeR);
+		if(sample >= this.processedShapeR.length) {
+			return 0;
+		} else {
+			var base = this.getAmplitude(releaseSample, null, normalized);
+			amplitude = base * Aural.Sound.Interpolation.linear(sample, this.processedShapeR);
+		}
 	} else {
 		if(sample >= this.processedShapeDAHD.length) {
 			amplitude = this.sustain;
 		} else {
 			amplitude = Aural.Sound.Interpolation.linear(sample, this.processedShapeDAHD);
+		}
+
+		if(this.inverted) {
+			amplitude = 1 - amplitude;
 		}
 	}
 
@@ -85,7 +121,6 @@ Aural.Sound.Enveloppe.DAHDSR.prototype.process = function() {
 };
 
 Aural.Sound.Enveloppe.DAHDSR.prototype.processDAHD = function() {
-	console.log(this.delay + this.attack + this.hold + this.decay);
 	var processedShape = new Float32Array(this.delay + this.attack + this.hold + this.decay),
 		t = 0,
 		i;
